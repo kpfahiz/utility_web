@@ -1,7 +1,10 @@
 import os
+import time
 
 from PIL import Image
 from werkzeug.datastructures import FileStorage
+
+from .logger import logger
 
 def compress_image(file: FileStorage, quality: int) -> str:
     """
@@ -16,10 +19,17 @@ def compress_image(file: FileStorage, quality: int) -> str:
     """
     filename = file.filename
     filepath = os.path.join("static/uploads", filename)
-    file.save(filepath)
+    filename = file.filename
+    filepath = os.path.join("static/uploads", filename)
 
-    img = Image.open(filepath)
-    compressed_path = os.path.join("static/uploads", f"compressed_{filename}")
-    img.save(compressed_path, optimize=True, quality=quality)
+    try:
+        file.save(filepath)
+        img = Image.open(filepath)
+        compressed_path = os.path.join("static/uploads", f"compressed_{filename}")
+        img.save(compressed_path, optimize=True, quality=quality)
 
-    return compressed_path
+        return compressed_path
+
+    except Exception as e:
+        logger.error(f"Failed to compress {filename}: {e}", exc_info=True)
+        raise
