@@ -1,9 +1,21 @@
 from flask import Blueprint, render_template, request, send_file
+from werkzeug.datastructures import FileStorage
 from .image_tools import compress_image
 from .qr_tools import generate_qr
-from werkzeug.datastructures import FileStorage
+from .logger import logger
 
 main = Blueprint("main", __name__)
+
+@main.app_errorhandler(404)
+def not_found():
+    logger.warning("404 Error: Page not found")
+    return render_template("404.html"), 404
+
+@main.app_errorhandler(500)
+def internal_error(error):
+    logger.error(f"500 Error: {error}", exc_info=True)
+    return render_template("500.html"), 500
+
 
 @main.route("/")
 def index() -> str:
