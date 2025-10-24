@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from werkzeug.datastructures import FileStorage
 
-from .logger import logger
+from .utils.logger import logger
 from utils.timing import measure_duration
 
 @measure_duration

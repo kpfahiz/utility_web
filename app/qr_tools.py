@@ -1,7 +1,7 @@
 import os
 import qrcode
 
-from .logger import logger
+from utils.logger import logger
 from utils.timing import measure_duration
 
 @measure_duration
