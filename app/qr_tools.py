@@ -1,6 +1,10 @@
 import os
 import qrcode
 
+from .logger import logger
+from utils.timing import measure_duration
+
+@measure_duration
 def generate_qr(data: str) -> str:
     """
     Generator a QR code from the given data.
@@ -12,8 +16,14 @@ def generate_qr(data: str) -> str:
         Path to the generated QR image.
     """
 
-    img = qrcode.make(data)
     output_path = os.path.join("static/uploads", "qr_code.png")
-    img.save(output_path)
 
-    return output_path
+    try:
+        img = qrcode.make(data)
+        img.save(output_path)
+
+        return output_path
+
+    except Exception as e:
+        logger.error(f"Failed to generate QR for '{data}': {e}", exc_info=True)
+        raise

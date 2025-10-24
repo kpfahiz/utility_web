@@ -1,11 +1,12 @@
 import os
-import time
 
 from PIL import Image
 from werkzeug.datastructures import FileStorage
 
 from .logger import logger
+from utils.timing import measure_duration
 
+@measure_duration
 def compress_image(file: FileStorage, quality: int) -> str:
     """
     Compress an image file to the specified quality.
