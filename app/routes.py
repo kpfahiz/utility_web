@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, send_file
 from werkzeug.datastructures import FileStorage
 from .image_tools import compress_image
 from .qr_tools import generate_qr
-from .logger import logger
+from .utils.logger import logger
 
 main = Blueprint("main", __name__)
 
