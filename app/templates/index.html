@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Home | Image & QR Tools{% endblock %}
+{% block content %}
+  <div class="text-center">
+    <h1 class="mb-4">Welcome to Image & QR Tools</h1>
+    <p class="lead">Compress your images or generate QR codes instantly — all in one place.</p>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-6 text-center">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">🔧 Image Compression</h4>
+          <p class="card-text">Upload and compress JPEG or PNG images with adjustable quality.</p>
+          <a href="/compress" class="btn btn-primary">Go to Compressor</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 text-center mt-4 mt-md-0">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">📱 QR Code Generator</h4>
+          <p class="card-text">Create QR codes from text or URLs and download them instantly.</p>
+          <a href="/qr" class="btn btn-success">Go to QR Generator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
