@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Compress Image{% endblock %}
+{% block content %}
+  <h2 class="mb-4">🔧 Compress Your Image</h2>
+  <form method="POST" enctype="multipart/form-data" class="mb-3">
+    <div class="mb-3">
+      <label for="image" class="form-label">Select Image (JPEG/PNG)</label>
+      <input type="file" class="form-control" name="image" required>
+    </div>
+    <div class="mb-3">
+      <label for="quality" class="form-label">Compression Quality (1–100)</label>
+      <input type="number" class="form-control" name="quality" value="30" min="1" max="100">
+    </div>
+    <button type="submit" class="btn btn-primary">Compress</button>
+  </form>
+{% endblock %}
