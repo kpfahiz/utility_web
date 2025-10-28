@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Generate QR Code{% endblock %}
+{% block content %}
+  <h2 class="mb-4">📱 Generate a QR Code</h2>
+  <form method="POST" class="mb-3">
+    <div class="mb-3">
+      <label for="data" class="form-label">Enter Text or URL</label>
+      <input type="text" class="form-control" name="data" required>
+    </div>
+    <button type="submit" class="btn btn-success">Generate QR</button>
+  </form>
+{% endblock %}
