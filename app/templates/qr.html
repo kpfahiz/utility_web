@@ -1,12 +1,82 @@
 {% extends "base.html" %}
 {% block title %}Generate QR Code{% endblock %}
 {% block content %}
-  <h2 class="mb-4">📱 Generate a QR Code</h2>
-  <form method="POST" class="mb-3">
-    <div class="mb-3">
-      <label for="data" class="form-label">Enter Text or URL</label>
-      <input type="text" class="form-control" name="data" required>
-    </div>
-    <button type="submit" class="btn btn-success">Generate QR</button>
-  </form>
+  <div class="qr-wrapper">
+    <h2 class="mb-4">📱 Generate a QR Code</h2>
+    <form method="POST" class="mb-4 qr-form">
+      <div class="mb-3">
+        <label for="data" class="form-label">Enter Text or URL</label>
+        <input
+          type="text"
+          class="form-control"
+          name="data"
+          placeholder="https://example.com"
+          value="{{ original_text if generated else '' }}"
+          required
+        >
+      </div>
+      <div class="qr-color-controls row g-3 mb-3">
+        <div class="col-sm-6">
+          <label for="fill_color" class="form-label d-flex align-items-center gap-2">
+            <span>QR Pixel Color</span>
+            <span class="badge text-bg-light text-muted">Foreground</span>
+          </label>
+          <input
+            type="color"
+            class="form-control form-control-color qr-color-input"
+            id="fill_color"
+            name="fill_color"
+            value="{{ fill_color }}"
+            title="Choose the color of the QR code's modules"
+          >
+          <small class="text-muted mt-2 d-block">
+            Choose a darker color for best contrast.
+          </small>
+        </div>
+        <div class="col-sm-6">
+          <label for="background_color" class="form-label d-flex align-items-center gap-2">
+            <span>Background Color</span>
+            <span class="badge text-bg-light text-muted">Canvas</span>
+          </label>
+          <input
+            type="color"
+            class="form-control form-control-color qr-color-input"
+            id="background_color"
+            name="background_color"
+            value="{{ background_color }}"
+            title="Choose the background color behind the QR code"
+          >
+          <small class="text-muted mt-2 d-block">
+            Pick a lighter color to keep the code scannable.
+          </small>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Generate QR</button>
+    </form>
+
+    {% if generated %}
+      <div class="qr-preview card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title text-uppercase text-muted mb-2">Your QR Code</h5>
+          <p class="card-text small text-muted mb-3">Encoded from: <span class="text-dark">{{ original_text }}</span></p>
+          <div class="qr-color-preview mb-3">
+            <div class="qr-color-swatch">
+              <span class="qr-color-label">Pixel</span>
+              <span class="qr-color-chip" style="--chip-color: {{ fill_color }};"></span>
+              <span class="qr-color-value">{{ fill_color }}</span>
+            </div>
+            <div class="qr-color-swatch">
+              <span class="qr-color-label">Background</span>
+              <span class="qr-color-chip" style="--chip-color: {{ background_color }};"></span>
+              <span class="qr-color-value">{{ background_color }}</span>
+            </div>
+          </div>
+          <div class="qr-image-container">
+            <img src="{{ qr_data_uri }}" alt="Generated QR Code" class="qr-image">
+          </div>
+          <a href="/download/{{ download_name }}" class="btn btn-outline-primary mt-3" download>Download PNG</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

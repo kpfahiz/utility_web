@@ -1,9 +1,85 @@
 {% extends "base.html" %}
 {% block title %}404 Not Found{% endblock %}
 {% block content %}
-  <div class="text-center">
-    <h1 class="display-4">404</h1>
-    <p class="lead">Oops! The page you're looking for doesn't exist.</p>
-    <a href="/" class="btn btn-outline-secondary">Back to Home</a>
+  <div class="not-found-wrapper">
+    <svg class="ufo-scene" viewBox="0 0 600 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="zeroGradient" x1="240" y1="130" x2="300" y2="280" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#eef2ff"/>
+          <stop offset="1" stop-color="#c4b5fd"/>
+        </linearGradient>
+        <linearGradient id="glassGradient" x1="340" y1="70" x2="340" y2="140" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#ffffff" stop-opacity="0.95"/>
+          <stop offset="1" stop-color="#bfdbfe" stop-opacity="0.5"/>
+        </linearGradient>
+        <radialGradient id="beamGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+            gradientTransform="translate(340 210) rotate(90) scale(160 120)">
+          <stop offset="0.05" stop-color="#c4b5fd" stop-opacity="0.65"/>
+          <stop offset="0.6" stop-color="#f9a8d4" stop-opacity="0.4"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g stroke-linecap="round">
+        <circle class="scene-bg" cx="300" cy="210" r="205" />
+        <circle class="scene-bg" cx="300" cy="210" r="170" />
+        <circle class="scene-bg" cx="300" cy="210" r="140" />
+      </g>
+      <g opacity="0.7">
+        <circle cx="130" cy="100" r="4" fill="#bae6fd">
+          <animate attributeName="opacity" values="0.2;0.9;0.2" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+        </circle>
+        <circle cx="500" cy="80" r="3.5" fill="#c4b5fd">
+          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.4s" repeatCount="indefinite" begin="0.2s"/>
+        </circle>
+        <circle cx="470" cy="150" r="3" fill="#f9a8d4">
+          <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.8s" repeatCount="indefinite" begin="1.2s"/>
+        </circle>
+      </g>
+      <g class="digits">
+        <path class="digit" d="M140 115c-42 0-60 28-60 95s18 95 60 95 60-28 60-95-18-95-60-95zm0 158c-19 0-26-17-26-63s7-63 26-63 26 17 26 63-7 63-26 63z"/>
+        <path class="digit-zero" d="M298 125c-58 0-88 37-88 89s30 89 88 89 88-37 88-89-30-89-88-89zm0 140c-26 0-42-19-42-51s16-51 42-51 42 19 42 51-16 51-42 51z"/>
+        <path class="digit" d="M460 115c-42 0-60 28-60 95s18 95 60 95 60-28 60-95-18-95-60-95zm0 158c-19 0-26-17-26-63s7-63 26-63 26 17 26 63-7 63-26 63z"/>
+      </g>
+      <g class="ufo">
+        <g class="ufo-stars">
+          <ellipse class="ufo-beam" cx="340" cy="210" rx="118" ry="160" fill="url(#beamGradient)"/>
+        </g>
+        <g>
+          <ellipse cx="340" cy="162" rx="82" ry="26" fill="#7c3aed"/>
+          <ellipse cx="340" cy="162" rx="82" ry="26" fill="url(#beamGradient)" opacity="0.2"/>
+          <ellipse cx="340" cy="135" rx="52" ry="32" class="ufo-glass"/>
+          <ellipse cx="340" cy="170" rx="110" ry="32" class="ufo-body"/>
+          <ellipse cx="340" cy="180" rx="98" ry="18" fill="#7c3aed" opacity="0.45"/>
+          <g class="ufo-lights">
+            <circle cx="260" cy="170" r="10"/>
+            <circle cx="295" cy="188" r="10"/>
+            <circle cx="340" cy="194" r="11"/>
+            <circle cx="385" cy="188" r="10"/>
+            <circle cx="420" cy="170" r="10"/>
+          </g>
+        </g>
+      </g>
+      <g class="cow">
+        <ellipse cx="340" cy="250" rx="42" ry="30"/>
+        <circle cx="308" cy="240" r="8" fill="#222222"/>
+        <circle cx="372" cy="240" r="8" fill="#222222"/>
+        <ellipse cx="340" cy="226" rx="28" ry="18" fill="#fff"/>
+        <path d="M322 268c6 10 12 14 18 15 6 1 12-3 18-15" fill="#f472b6" opacity="0.9"/>
+        <circle cx="328" cy="226" r="4" fill="#222222"/>
+        <circle cx="352" cy="226" r="4" fill="#222222"/>
+      </g>
+      <g class="grass">
+        <path d="M70 300c40 50 120 40 160 0s80-40 120 0 120 50 160 0" opacity="0.6"/>
+        <path d="M90 315c35 40 95 30 130 0s70-30 100 0 95 40 130 0" opacity="0.35"/>
+      </g>
+    </svg>
+    <div class="message">
+      <h1>Looks Like Our Cow Got Beamed Up</h1>
+      <p>The aliens clearly have great taste in web pages. While we negotiate the intergalactic exchange rate, let’s get you back to familiar pastures.</p>
+      <a href="/">
+        <span>Teleport Me Home</span>
+        <span aria-hidden="true">🛸</span>
+      </a>
+    </div>
   </div>
 {% endblock %}

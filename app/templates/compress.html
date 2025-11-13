@@ -2,6 +2,38 @@
 {% block title %}Compress Image{% endblock %}
 {% block content %}
   <h2 class="mb-4">🔧 Compress Your Image</h2>
+  
+  {% if compressed %}
+  <div class="alert alert-success mb-4">
+    <h5 class="alert-heading">✅ Compression Successful!</h5>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <p class="mb-1"><strong>Original Size:</strong> 
+          {% if original_size_mb >= 1 %}
+            {{ "%.2f"|format(original_size_mb) }} MB
+          {% else %}
+            {{ "%.2f"|format(original_size_kb) }} KB
+          {% endif %}
+        </p>
+        <p class="mb-1"><strong>Compressed Size:</strong> 
+          {% if compressed_size_mb >= 1 %}
+            {{ "%.2f"|format(compressed_size_mb) }} MB
+          {% else %}
+            {{ "%.2f"|format(compressed_size_kb) }} KB
+          {% endif %}
+        </p>
+        <p class="mb-0"><strong>Compression:</strong> 
+          <span class="badge bg-success">{{ "%.1f"|format(compression_percentage) }}% reduction</span>
+        </p>
+      </div>
+    </div>
+    <hr>
+    <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Compressed Image</a>
+    <a href="/compress" class="btn btn-secondary">Compress Another Image</a>
+  </div>
+  {% endif %}
+  
   <form method="POST" enctype="multipart/form-data" class="mb-3">
     <div class="mb-3">
       <label for="image" class="form-label">Select Image (JPEG/PNG)</label>
