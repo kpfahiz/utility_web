@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Compress PDF{% endblock %}
+{% block content %}
+  <h2 class="mb-4">📄 Compress Your PDF</h2>
+  
+  {% if error %}
+  <div class="alert alert-danger mb-4">
+    <strong>Error:</strong> {{ error }}
+  </div>
+  {% endif %}
+  
+  {% if compressed %}
+  <div class="alert alert-success mb-4">
+    <h5 class="alert-heading">✅ Compression Successful!</h5>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <p class="mb-1"><strong>Original Size:</strong> 
+          {% if original_size_mb >= 1 %}
+            {{ "%.2f"|format(original_size_mb) }} MB
+          {% else %}
+            {{ "%.2f"|format(original_size_kb) }} KB
+          {% endif %}
+        </p>
+        <p class="mb-1"><strong>Compressed Size:</strong> 
+          {% if compressed_size_mb >= 1 %}
+            {{ "%.2f"|format(compressed_size_mb) }} MB
+          {% else %}
+            {{ "%.2f"|format(compressed_size_kb) }} KB
+          {% endif %}
+        </p>
+        <p class="mb-0"><strong>Compression:</strong> 
+          <span class="badge bg-success">{{ "%.1f"|format(compression_percentage) }}% reduction</span>
+        </p>
+      </div>
+    </div>
+    <hr>
+    <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Compressed PDF</a>
+    <a href="/compress-pdf" class="btn btn-secondary">Compress Another PDF</a>
+  </div>
+  {% endif %}
+  
+  <form method="POST" enctype="multipart/form-data" class="mb-3">
+    <div class="mb-3">
+      <label for="pdf" class="form-label">Select PDF File</label>
+      <input type="file" class="form-control" name="pdf" accept=".pdf,application/pdf" required>
+    </div>
+    <div class="mb-3">
+      <label for="compression_level" class="form-label">Compression Level</label>
+      <select class="form-select" name="compression_level" id="compression_level">
+        <option value="low">Low (Better Quality, Larger Size)</option>
+        <option value="medium" selected>Medium (Balanced)</option>
+        <option value="high">High (Smaller Size, Lower Quality)</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Compress PDF</button>
+  </form>
+  
+  <div class="mt-4">
+    <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+  </div>
+{% endblock %}
+
