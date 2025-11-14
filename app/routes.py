@@ -4,6 +4,7 @@ import os
 from flask import Blueprint, current_app, render_template, request, send_file
 from werkzeug.datastructures import FileStorage
 
+from .document_tools import convert_doc_to_pdf, convert_pdf_to_doc
 from .image_tools import SUPPORTED_FORMATS, compress_image, convert_image
 from .pdf_tools import (
     compress_pdf,
@@ -325,3 +326,109 @@ def edit_pdf_route() -> str:
             )
 
     return render_template("edit_pdf.html", operation="")
+
+
+@main.route("/convert-pdf-doc", methods=["GET", "POST"])
+def convert_pdf_doc_route() -> str:
+    """
+    Handle PDF to DOC conversion.
+    """
+    if request.method == "POST":
+        file = request.files.get("file")
+        if not file:
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="pdf-to-doc",
+                error="Please select a PDF file",
+            )
+
+        try:
+            result = convert_pdf_to_doc(file)
+
+            # Format file sizes for display
+            original_size_mb = result["original_size"] / (1024 * 1024)
+            converted_size_mb = result["converted_size"] / (1024 * 1024)
+            original_size_kb = result["original_size"] / 1024
+            converted_size_kb = result["converted_size"] / 1024
+
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=True,
+                conversion_type="pdf-to-doc",
+                download_name=result["filename"],
+                original_size_mb=original_size_mb,
+                converted_size_mb=converted_size_mb,
+                original_size_kb=original_size_kb,
+                converted_size_kb=converted_size_kb,
+            )
+        except ImportError as e:
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="pdf-to-doc",
+                error=f"Library not installed: {str(e)}",
+            )
+        except Exception as e:
+            logger.error(f"Failed to convert PDF to DOC: {e}", exc_info=True)
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="pdf-to-doc",
+                error=f"Conversion failed: {str(e)}",
+            )
+
+    return render_template("convert_pdf_doc.html", converted=False, conversion_type="pdf-to-doc")
+
+
+@main.route("/convert-doc-pdf", methods=["GET", "POST"])
+def convert_doc_pdf_route() -> str:
+    """
+    Handle DOC to PDF conversion.
+    """
+    if request.method == "POST":
+        file = request.files.get("file")
+        if not file:
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="doc-to-pdf",
+                error="Please select a DOC/DOCX file",
+            )
+
+        try:
+            result = convert_doc_to_pdf(file)
+
+            # Format file sizes for display
+            original_size_mb = result["original_size"] / (1024 * 1024)
+            converted_size_mb = result["converted_size"] / (1024 * 1024)
+            original_size_kb = result["original_size"] / 1024
+            converted_size_kb = result["converted_size"] / 1024
+
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=True,
+                conversion_type="doc-to-pdf",
+                download_name=result["filename"],
+                original_size_mb=original_size_mb,
+                converted_size_mb=converted_size_mb,
+                original_size_kb=original_size_kb,
+                converted_size_kb=converted_size_kb,
+            )
+        except ImportError as e:
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="doc-to-pdf",
+                error=f"Library not installed: {str(e)}",
+            )
+        except Exception as e:
+            logger.error(f"Failed to convert DOC to PDF: {e}", exc_info=True)
+            return render_template(
+                "convert_pdf_doc.html",
+                converted=False,
+                conversion_type="doc-to-pdf",
+                error=f"Conversion failed: {str(e)}",
+            )
+
+    return render_template("convert_pdf_doc.html", converted=False, conversion_type="doc-to-pdf")
