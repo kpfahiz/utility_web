@@ -24,7 +24,7 @@ main = Blueprint("main", __name__)
 
 
 @main.app_errorhandler(404)
-def not_found():
+def not_found(error):
     logger.warning("404 Error: Page not found")
     return render_template("404.html"), 404
 
