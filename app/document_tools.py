@@ -1,4 +1,6 @@
 import os
+import time
+import uuid
 
 from flask import current_app
 from werkzeug.datastructures import FileStorage
@@ -14,12 +16,7 @@ except ImportError:
     PDF2DOCX_AVAILABLE = False
 
 try:
-    from docx import Document
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-    from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
+    from docx2pdf import convert
     DOCX2PDF_AVAILABLE = True
 except ImportError:
     DOCX2PDF_AVAILABLE = False
@@ -49,21 +46,43 @@ def convert_pdf_to_doc(file: FileStorage) -> dict:
     os.makedirs(upload_folder, exist_ok=True)
 
     filename = secure_filename(file.filename)
-    original_path = os.path.join(upload_folder, filename)
 
-    # Get base filename without extension
+    # Get base filename without extension and add unique identifier
     base_name = os.path.splitext(filename)[0]
-    converted_filename = f"converted_{base_name}.docx"
+    unique_id = uuid.uuid4().hex[:8]
+    converted_filename = f"converted_{base_name}_{unique_id}.docx"
     converted_path = os.path.join(upload_folder, converted_filename)
+    original_path = os.path.join(upload_folder, f"{unique_id}_{filename}")
 
     try:
         file.save(original_path)
         original_size = os.path.getsize(original_path)
 
+        # Delete output file if it exists (to avoid permission issues)
+        if os.path.exists(converted_path):
+            try:
+                os.remove(converted_path)
+                time.sleep(0.1)  # Small delay to ensure file is released
+            except Exception as e:
+                logger.warning(f"Could not remove existing file {converted_path}: {e}")
+
         # Convert PDF to DOCX
         cv = Converter(original_path)
         cv.convert(converted_path, start=0, end=None)
         cv.close()
+
+        # Clean up original file
+        try:
+            if os.path.exists(original_path):
+                os.remove(original_path)
+        except Exception as e:
+            logger.warning(f"Could not remove temporary file {original_path}: {e}")
+
+        # Wait a moment for file system to catch up
+        time.sleep(0.1)
+
+        if not os.path.exists(converted_path):
+            raise Exception("Conversion completed but output file was not created")
 
         converted_size = os.path.getsize(converted_path)
 
@@ -76,13 +95,21 @@ def convert_pdf_to_doc(file: FileStorage) -> dict:
 
     except Exception as exc:
         logger.error(f"Failed to convert PDF {filename} to DOCX: {exc}", exc_info=True)
+        # Clean up on error
+        try:
+            if os.path.exists(original_path):
+                os.remove(original_path)
+            if os.path.exists(converted_path):
+                os.remove(converted_path)
+        except Exception:
+            pass
         raise
 
 
 @measure_duration
 def convert_doc_to_pdf(file: FileStorage) -> dict:
     """
-    Convert a DOCX file to PDF format.
+    Convert a DOCX file to PDF format preserving all formatting, images, and styles.
 
     Args:
         file: Uploaded DOCX file.
@@ -96,115 +123,53 @@ def convert_doc_to_pdf(file: FileStorage) -> dict:
     """
     if not DOCX2PDF_AVAILABLE:
         raise ImportError(
-            "Required libraries are not installed. Please install using: "
-            "pip install python-docx reportlab"
+            "docx2pdf library is not installed. Please install it using: "
+            "pip install docx2pdf\n\n"
+            "Note: This library requires LibreOffice or Microsoft Word to be installed.\n"
+            "For Windows: Install Microsoft Word or LibreOffice\n"
+            "For Linux/Mac: Install LibreOffice (sudo apt-get install libreoffice)"
         )
 
     upload_folder = current_app.config["UPLOAD_FOLDER"]
     os.makedirs(upload_folder, exist_ok=True)
 
     filename = secure_filename(file.filename)
-    original_path = os.path.join(upload_folder, filename)
 
-    # Get base filename without extension
+    # Get base filename without extension and add unique identifier
     base_name = os.path.splitext(filename)[0]
-    converted_filename = f"converted_{base_name}.pdf"
+    unique_id = uuid.uuid4().hex[:8]
+    converted_filename = f"converted_{base_name}_{unique_id}.pdf"
     converted_path = os.path.join(upload_folder, converted_filename)
+    original_path = os.path.join(upload_folder, f"{unique_id}_{filename}")
 
     try:
         file.save(original_path)
         original_size = os.path.getsize(original_path)
 
-        # Read DOCX file
-        doc = Document(original_path)
+        # Delete output file if it exists (to avoid permission issues)
+        if os.path.exists(converted_path):
+            try:
+                os.remove(converted_path)
+                time.sleep(0.1)  # Small delay to ensure file is released
+            except Exception as e:
+                logger.warning(f"Could not remove existing file {converted_path}: {e}")
 
-        # Create PDF document
-        pdf_doc = SimpleDocTemplate(
-            converted_path,
-            pagesize=letter,
-            rightMargin=72,
-            leftMargin=72,
-            topMargin=72,
-            bottomMargin=18,
-        )
+        # Convert DOCX to PDF using docx2pdf
+        # This preserves all formatting, images, alignment, fonts, and styles
+        convert(original_path, converted_path)
 
-        # Build PDF content
-        story = []
-        styles = getSampleStyleSheet()
+        # Clean up original file
+        try:
+            if os.path.exists(original_path):
+                os.remove(original_path)
+        except Exception as e:
+            logger.warning(f"Could not remove temporary file {original_path}: {e}")
 
-        # Custom styles
-        title_style = ParagraphStyle(
-            "CustomTitle",
-            parent=styles["Heading1"],
-            fontSize=16,
-            spaceAfter=12,
-            alignment=TA_CENTER,
-        )
+        # Wait a moment for file system to catch up
+        time.sleep(0.1)
 
-        for paragraph in doc.paragraphs:
-            text = paragraph.text.strip()
-            if not text:
-                story.append(Spacer(1, 0.2 * inch))
-                continue
-
-            # Determine alignment
-            alignment = TA_LEFT
-            if paragraph.alignment == 1:  # CENTER
-                alignment = TA_CENTER
-            elif paragraph.alignment == 2:  # RIGHT
-                alignment = TA_RIGHT
-            elif paragraph.alignment == 3:  # JUSTIFY
-                alignment = TA_JUSTIFY
-
-            # Determine style based on paragraph style
-            style = styles["Normal"]
-            if "Heading 1" in paragraph.style.name:
-                style = title_style
-            elif "Heading 2" in paragraph.style.name:
-                style = styles["Heading2"]
-            elif "Heading 3" in paragraph.style.name:
-                style = styles["Heading3"]
-
-            # Create paragraph for PDF
-            para = Paragraph(text, style)
-            para.alignment = alignment
-            story.append(para)
-            story.append(Spacer(1, 0.1 * inch))
-
-        # Handle tables
-        for table in doc.tables:
-            from reportlab.platypus import Table, TableStyle
-            from reportlab.lib import colors
-
-            table_data = []
-            for row in table.rows:
-                row_data = []
-                for cell in row.cells:
-                    row_data.append(cell.text.strip())
-                table_data.append(row_data)
-
-            if table_data:
-                pdf_table = Table(table_data)
-                pdf_table.setStyle(
-                    TableStyle(
-                        [
-                            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-                            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-                            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-                            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                            ("FONTSIZE", (0, 0), (-1, 0), 12),
-                            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-                            ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                        ]
-                    )
-                )
-                story.append(Spacer(1, 0.2 * inch))
-                story.append(pdf_table)
-                story.append(Spacer(1, 0.2 * inch))
-
-        # Build PDF
-        pdf_doc.build(story)
+        if not os.path.exists(converted_path):
+            raise Exception("Conversion completed but output file was not created")
 
         converted_size = os.path.getsize(converted_path)
 
@@ -217,5 +182,36 @@ def convert_doc_to_pdf(file: FileStorage) -> dict:
 
     except Exception as exc:
         logger.error(f"Failed to convert DOCX {filename} to PDF: {exc}", exc_info=True)
+        # Clean up on error
+        try:
+            if os.path.exists(original_path):
+                os.remove(original_path)
+            if os.path.exists(converted_path):
+                os.remove(converted_path)
+        except Exception:
+            pass
+        
+        # Provide helpful error message
+        error_msg = str(exc)
+        if "LibreOffice" in error_msg or "soffice" in error_msg.lower():
+            raise Exception(
+                "LibreOffice is required but not found. Please install LibreOffice:\n"
+                "Windows: Download from https://www.libreoffice.org/\n"
+                "Linux: sudo apt-get install libreoffice\n"
+                "Mac: brew install --cask libreoffice"
+            )
+        elif "Word" in error_msg or "win32com" in error_msg.lower():
+            raise Exception(
+                "Microsoft Word is required but not found. Please install Microsoft Word "
+                "or use LibreOffice as an alternative."
+            )
+        elif "Permission denied" in error_msg or "[Errno 13]" in error_msg:
+            raise Exception(
+                f"Permission denied while accessing file. This may happen if:\n"
+                "1. The file is open in another program (Word/LibreOffice)\n"
+                "2. Antivirus is scanning the file\n"
+                "3. File permissions are restricted\n"
+                "Please close any programs using the file and try again."
+            )
         raise
 

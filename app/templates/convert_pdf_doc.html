@@ -116,12 +116,20 @@
         <h6>DOC to PDF Conversion</h6>
         <ul>
           <li>Converts DOC/DOCX documents to PDF format</li>
-          <li>Preserves text, formatting, headings, and basic tables</li>
-          <li>Maintains document structure and layout</li>
-          <li>Creates universally readable PDF files</li>
+          <li><strong>Preserves ALL formatting:</strong> fonts, alignment, styles, colors</li>
+          <li><strong>Preserves images:</strong> including background images</li>
+          <li><strong>Preserves tables:</strong> with all formatting and borders</li>
+          <li><strong>Preserves layout:</strong> margins, page breaks, headers, footers</li>
+          <li>Creates PDF files that look identical to the original document</li>
         </ul>
-        <div class="alert alert-info mt-3">
-          <strong>Note:</strong> Complex formatting, advanced tables, and images are converted with basic support. For best results with complex documents, consider using dedicated conversion tools.
+        <div class="alert alert-warning mt-3">
+          <strong>Requirements:</strong> This feature requires LibreOffice or Microsoft Word to be installed on the server.
+          <br>
+          <small>
+            <strong>Windows:</strong> Install Microsoft Word or LibreOffice<br>
+            <strong>Linux:</strong> <code>sudo apt-get install libreoffice</code><br>
+            <strong>Mac:</strong> <code>brew install --cask libreoffice</code>
+          </small>
         </div>
       {% endif %}
     </div>
