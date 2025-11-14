@@ -2,13 +2,13 @@
 {% block title %}Home | Image & QR Tools{% endblock %}
 {% block content %}
   <div class="text-center">
-    <h1 class="mb-4">Welcome to Image & QR Tools</h1>
-    <p class="lead">Compress your images or generate QR codes instantly — all in one place.</p>
+    <h1 class="mb-4">Welcome to Utility Web Tools</h1>
+    <p class="lead">Compress images, convert formats, generate QR codes, compress PDFs, and edit PDFs instantly — all in one place.</p>
   </div>
 
   <div class="row mt-5">
-    <div class="col-md-6 text-center">
-      <div class="card shadow-sm">
+    <div class="col-md-6 col-lg-4 text-center mb-4">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
           <h4 class="card-title">🔧 Image Compression</h4>
           <p class="card-text">Upload and compress JPEG or PNG images with adjustable quality.</p>
@@ -17,12 +17,42 @@
       </div>
     </div>
 
-    <div class="col-md-6 text-center mt-4 mt-md-0">
-      <div class="card shadow-sm">
+    <div class="col-md-6 col-lg-4 text-center mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title">🔄 Image Conversion</h4>
+          <p class="card-text">Convert images between different formats (JPEG, PNG, GIF, BMP, TIFF, WebP, ICO).</p>
+          <a href="/convert-image" class="btn btn-info">Convert Image</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 text-center mb-4">
+      <div class="card shadow-sm h-100">
         <div class="card-body">
           <h4 class="card-title">📱 QR Code Generator</h4>
           <p class="card-text">Create QR codes from text or URLs and download them instantly.</p>
           <a href="/qr" class="btn btn-success">Go to QR Generator</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 text-center mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title">📄 PDF Compression</h4>
+          <p class="card-text">Compress PDF files to reduce file size while maintaining quality.</p>
+          <a href="/compress-pdf" class="btn btn-warning">Compress PDF</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 text-center mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h4 class="card-title">✏️ PDF Editor</h4>
+          <p class="card-text">Merge, split, rotate, and extract pages from PDF files.</p>
+          <a href="/edit-pdf" class="btn btn-danger">Edit PDF</a>
         </div>
       </div>
     </div>
