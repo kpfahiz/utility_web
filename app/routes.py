@@ -11,13 +11,16 @@ from .pdf_tools import (
     extract_pages,
     merge_pdfs,
     rotate_pdf,
+    rotate_pdf,
     split_pdf,
+    add_signature,
 )
 from .qr_tools import (
     DEFAULT_BACKGROUND_COLOR,
     DEFAULT_FILL_COLOR,
     generate_qr,
 )
+from .bg_tools import remove_background
 from .utils.logger import logger
 
 main = Blueprint("main", __name__)
@@ -140,6 +143,81 @@ def download(filename: str):
     return send_file(file_path, as_attachment=True)
 
 
+
+
+@main.route("/download-bg-removed/<filename>")
+def download_bg_removed(filename: str):
+    """
+    Download a background removed image.
+    Support renaming via query parameter 'name'.
+    """
+    upload_folder = current_app.config["UPLOAD_FOLDER"]
+    file_path = os.path.join(upload_folder, filename)
+    
+    # Check if a custom name is provided
+    download_name = request.args.get("name")
+    if download_name:
+        # Ensure it has the correct extension
+        ext = os.path.splitext(filename)[1]
+        if not download_name.lower().endswith(ext.lower()):
+            download_name += ext
+    else:
+        download_name = filename
+
+    return send_file(file_path, as_attachment=True, download_name=download_name)
+
+
+@main.route("/remove-background", methods=["GET", "POST"])
+def remove_background_route() -> str:
+    """
+    Handle background removal form.
+    """
+    if request.method == "POST":
+        file = request.files.get("image")
+        if not file:
+             return render_template("remove_background.html", error="Please select an image")
+        
+        background_color = None
+        if request.form.get("enable_color") and request.form.get("background_color"):
+            background_color = request.form.get("background_color")
+
+        try:
+            result = remove_background(file, background_color=background_color)
+            
+            # Save the result to the upload folder so we can download it
+            upload_folder = current_app.config["UPLOAD_FOLDER"]
+            save_path = os.path.join(upload_folder, result["filename"])
+            
+            # Reset stream position before writing
+            result["data"].seek(0)
+            with open(save_path, "wb") as f:
+                f.write(result["data"].read())
+            
+            # Create data URI for preview
+            result["data"].seek(0)
+            encoded = base64.b64encode(result["data"].read()).decode("ascii")
+            image_data_uri = f"data:{result['mimetype']};base64,{encoded}"
+            
+            # Format sizes
+            original_size_kb = result["original_size"] / 1024
+            processed_size_kb = result["processed_size"] / 1024
+
+            return render_template(
+                "remove_background.html",
+                processed=True,
+                image_data_uri=image_data_uri,
+                download_name=result["filename"],
+                original_size_kb=original_size_kb,
+                processed_size_kb=processed_size_kb
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to remove background: {e}", exc_info=True)
+            return render_template("remove_background.html", error=f"Error: {str(e)}")
+
+    return render_template("remove_background.html")
+
+
 @main.route("/qr", methods=["GET", "POST"])
 def qr() -> str | FileStorage:
     """
@@ -203,6 +281,51 @@ def compress_pdf_route() -> str:
             compression_percentage=result["compression_percentage"],
         )
     return render_template("compress_pdf.html", compressed=False)
+
+
+
+@main.route("/sign-pdf", methods=["GET", "POST"])
+def sign_pdf_route() -> str:
+    """
+    Handle PDF signing form.
+    """
+    if request.method == "POST":
+        pdf_file = request.files.get("pdf")
+        image_file = request.files.get("image")
+        
+        if not pdf_file or not image_file:
+             return render_template("sign_pdf.html", error="Please upload both PDF and Image files")
+        
+        try:
+            page_num = int(request.form.get("page_num", 1))
+            scale = float(request.form.get("scale", 1.0))
+            
+            # Interactive Coordinate Mode
+            x_ratio = float(request.form.get("x_ratio", 0.0))
+            y_ratio = float(request.form.get("y_ratio", 0.0))
+            rotation = int(request.form.get("rotation", 0))
+            
+            # Fallback/Legacy
+            position = request.form.get("position", "manual")
+            
+            result = add_signature(
+                pdf_file, 
+                image_file, 
+                page_num, 
+                x_ratio=x_ratio,
+                y_ratio=y_ratio,
+                scale=scale,
+                rotation=rotation,
+                position=position
+            )
+            
+            return send_file(result["path"], as_attachment=True, download_name=result["filename"])
+            
+        except Exception as e:
+            logger.error(f"Failed to sign PDF: {e}", exc_info=True)
+            return render_template("sign_pdf.html", error=f"Error: {str(e)}")
+
+    return render_template("sign_pdf.html")
 
 
 @main.route("/edit-pdf", methods=["GET", "POST"])

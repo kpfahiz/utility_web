@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% block title %}Sign PDF | Utility WebApp{% endblock %}
+{% block content %}
+<!-- PDF.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+    // Set worker src
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+</script>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Sign PDF (Interactive)</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="signForm">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="pdf" class="form-label">1. Select PDF File</label>
+                                <input type="file" class="form-control" id="pdf" name="pdf" accept=".pdf" required
+                                    onchange="handlePdfUpload(this)">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="image" class="form-label">2. Select Signature Image</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*"
+                                    required onchange="handleImageUpload(this)">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">3. Controls</label>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                        onclick="changePage(-1)">Previous Page</button>
+                                    <span id="page_indicator">Page 1</span>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="changePage(1)">Next
+                                        Page</button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="scale" class="form-label">Signature Scale: <span
+                                        id="scale_val">1.0</span></label>
+                                <input type="range" class="form-range" id="scale" name="scale" min="0.1" max="2.0"
+                                    step="0.1" value="1.0" oninput="updateSignatureScale(this.value)">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rotation" class="form-label">Rotation: <span
+                                        id="rotation_val">0</span>°</label>
+                                <input type="range" class="form-range" id="rotation" name="rotation" min="0" max="360"
+                                    step="1" value="0" oninput="updateSignatureRotation(this.value)">
+                            </div>
+
+                            <!-- Hidden inputs for submission -->
+                            <input type="hidden" id="page_num" name="page_num" value="1">
+                            <input type="hidden" id="x_ratio" name="x_ratio" value="0">
+                            <input type="hidden" id="y_ratio" name="y_ratio" value="0">
+
+                            <button type="button" onclick="submitForm()" class="btn btn-primary w-100 mt-3">Sign &
+                                Download</button>
+                        </div>
+
+                        <div class="col-md-8">
+                            <p class="text-muted text-center" id="instruction-text">Upload PDF and Image to start
+                                signing.</p>
+                            <div id="pdf-container"
+                                style="position: relative; border: 1px solid #ccc; display: none; overflow: hidden;">
+                                <canvas id="the-canvas" style="display: block; width: 100%;"></canvas>
+                                <!-- Signature Overlay -->
+                                <div id="signature-overlay"
+                                    style="position: absolute; display: none; cursor: move; border: 1px dashed blue;">
+                                    <img id="signature-img" src=""
+                                        style="width: 100%; height: 100%; pointer-events: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% if error %}
+                <div class="alert alert-danger mt-3">{{ error }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pdfDoc = null;
+    let pageNum = 1;
+    let pageRendering = false;
+    let pageNumPending = null;
+    let scale = 1.0; // Viewport scale, usually we want to fit container
+    const canvas = document.getElementById('the-canvas');
+    const ctx = canvas.getContext('2d');
+    const pdfContainer = document.getElementById('pdf-container');
+    const instructionText = document.getElementById('instruction-text');
+    const signatureOverlay = document.getElementById('signature-overlay');
+    const signatureImg = document.getElementById('signature-img');
+    const scaleVal = document.getElementById('scale_val');
+    const rotationVal = document.getElementById('rotation_val');
+
+    // Drag State
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    function handlePdfUpload(input) {
+        const file = input.files[0];
+        if (file) {
+            instructionText.innerText = "Loading PDF...";
+            const fileReader = new FileReader();
+            fileReader.onload = function () {
+                const typedarray = new Uint8Array(this.result);
+                pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
+                    pdfDoc = pdf;
+                    pageNum = 1;
+                    document.getElementById('page_num').value = 1;
+                    renderPage(pageNum);
+                    pdfContainer.style.display = 'block';
+                    instructionText.style.display = 'none';
+                });
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+    }
+
+    function handleImageUpload(input) {
+        const file = input.files[0];
+        if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = function () {
+                signatureImg.src = this.result;
+                signatureOverlay.style.display = 'block';
+                signatureOverlay.style.left = '50px';
+                signatureOverlay.style.top = '50px';
+                // Reset scale logic
+                updateSignatureScale(document.getElementById('scale').value);
+                // Reset rotation
+                updateSignatureRotation(0);
+                document.getElementById('rotation').value = 0;
+            };
+            fileReader.readAsDataURL(file);
+        }
+    }
+
+    function renderPage(num) {
+        pageRendering = true;
+        // Fetch page
+        pdfDoc.getPage(num).then(function (page) {
+            // We want to fit width to col-md-8 width ?
+            // Better: Get container width
+            const containerWidth = pdfContainer.clientWidth || 600;
+            const viewport = page.getViewport({ scale: 1 });
+
+            // Calculate scale to fit width
+            const viewScale = containerWidth / viewport.width;
+            const scaledViewport = page.getViewport({ scale: viewScale });
+
+            canvas.height = scaledViewport.height;
+            canvas.width = scaledViewport.width;
+
+            // Render PDF page into canvas context
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: scaledViewport
+            };
+            const renderTask = page.render(renderContext);
+
+            // Wait for render to finish
+            renderTask.promise.then(function () {
+                pageRendering = false;
+                document.getElementById('page_indicator').textContent = "Page " + pageNum + " of " + pdfDoc.numPages;
+
+                if (pageNumPending !== null) {
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            });
+        });
+    }
+
+    function queueRenderPage(num) {
+        if (pageRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    }
+
+    function changePage(delta) {
+        if (!pdfDoc) return;
+        const newPageNum = pageNum + delta;
+        if (newPageNum >= 1 && newPageNum <= pdfDoc.numPages) {
+            pageNum = newPageNum;
+            document.getElementById('page_num').value = pageNum;
+            queueRenderPage(pageNum);
+        }
+    }
+
+    function updateSignatureScale(val) {
+        document.getElementById('scale_val').textContent = val;
+        // Visual Update only? No, we need to scale the overlay
+        // Base size 150px * val?
+        const baseWidth = 150;
+        const currentWidth = baseWidth * val;
+        signatureOverlay.style.width = currentWidth + 'px';
+        signatureOverlay.style.height = 'auto'; // Maintain aspect ratio
+    }
+
+    function updateSignatureRotation(val) {
+        document.getElementById('rotation_val').textContent = val;
+        signatureImg.style.transform = `rotate(${val}deg)`;
+    }
+
+    // Drag Logic
+    signatureOverlay.addEventListener('mousedown', function (e) {
+        if (!signatureImg.src) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialLeft = signatureOverlay.offsetLeft;
+        initialTop = signatureOverlay.offsetTop;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isDragging) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            // Boundary checks could be added here
+            signatureOverlay.style.left = (initialLeft + dx) + 'px';
+            signatureOverlay.style.top = (initialTop + dy) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+    });
+
+    // Form Submission Calculation
+    window.submitForm = function () {
+        if (!pdfDoc || !signatureImg.src) {
+            alert("Please select PDF and Image first.");
+            return;
+        }
+
+        // Calculate Ratios
+        // Page width/height in DOM (Canvas)
+        const pageWidth = canvas.width;
+        const pageHeight = canvas.height;
+
+        const sigLeft = signatureOverlay.offsetLeft;
+        const sigTop = signatureOverlay.offsetTop;
+
+        const x_ratio = sigLeft / pageWidth;
+        const y_ratio = sigTop / pageHeight;
+
+        document.getElementById('x_ratio').value = x_ratio;
+        document.getElementById('y_ratio').value = y_ratio;
+
+        document.getElementById('signForm').submit();
+    };
+</script>
+{% endblock %}
