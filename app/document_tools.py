@@ -26,6 +26,8 @@ except ImportError:
 def convert_pdf_to_doc(file: FileStorage) -> dict:
     """
     Convert a PDF file to DOCX format.
+    Tries to use Microsoft Word (via win32com) for best fidelity.
+    Falls back to pdf2docx if Word is not available.
 
     Args:
         file: Uploaded PDF file.
@@ -37,17 +39,10 @@ def convert_pdf_to_doc(file: FileStorage) -> dict:
             - original_size: Original file size in bytes
             - converted_size: Converted file size in bytes
     """
-    if not PDF2DOCX_AVAILABLE:
-        raise ImportError(
-            "pdf2docx library is not installed. Please install it using: pip install pdf2docx"
-        )
-
     upload_folder = current_app.config["UPLOAD_FOLDER"]
     os.makedirs(upload_folder, exist_ok=True)
 
     filename = secure_filename(file.filename)
-
-    # Get base filename without extension and add unique identifier
     base_name = os.path.splitext(filename)[0]
     unique_id = uuid.uuid4().hex[:8]
     converted_filename = f"converted_{base_name}_{unique_id}.docx"
@@ -57,32 +52,78 @@ def convert_pdf_to_doc(file: FileStorage) -> dict:
     try:
         file.save(original_path)
         original_size = os.path.getsize(original_path)
-
-        # Delete output file if it exists (to avoid permission issues)
+        
+        # Cleanup existing output if any
         if os.path.exists(converted_path):
             try:
                 os.remove(converted_path)
-                time.sleep(0.1)  # Small delay to ensure file is released
+            except OSError:
+                pass
+
+        conversion_success = False
+
+        # Strategy 1: Microsoft Word Automation (Best Fidelity)
+        if os.name == 'nt':  # Windows only
+            try:
+                import pythoncom
+                import win32com.client
+                
+                # Initialize COM for threading
+                pythoncom.CoInitialize()
+                
+                try:
+                    word = win32com.client.Dispatch("Word.Application")
+                    word.Visible = False
+                    
+                    # Open PDF in Word
+                    doc = word.Documents.Open(os.path.abspath(original_path), ConfirmConversions=False)
+                    
+                    # Save as DOCX (wdFormatXMLDocument = 12)
+                    doc.SaveAs2(os.path.abspath(converted_path), FileFormat=12)
+                    doc.Close()
+                    
+                    conversion_success = True
+                except Exception as e:
+                    logger.warning(f"Word automation failed: {e}")
+                    # Ensure Word quits if we started it but failed? 
+                    # Word might be shared, so be careful. 
+                    # Dispatch usually attaches to existing or creates new.
+                finally:
+                    # We usually want to keep Word open if it was open, but if we launched it...
+                    # Dispatch creates a new reference. "Application" object.
+                    # Safety: quitting might close user's docs if not careful, but usually acceptable for automation.
+                    # Better: try/finally close doc, maybe not quit app depending on environment.
+                    # For server, Quit is safer to avoid zombie processes.
+                    try:
+                         if 'word' in locals():
+                             word.Quit()
+                    except:
+                        pass
+                    pythoncom.CoUninitialize()
+            except ImportError:
+                logger.warning("pywin32 not installed, skipping Word automation.")
             except Exception as e:
-                logger.warning(f"Could not remove existing file {converted_path}: {e}")
+                logger.warning(f"Unexpected Word automation error: {e}")
 
-        # Convert PDF to DOCX
-        cv = Converter(original_path)
-        cv.convert(converted_path, start=0, end=None)
-        cv.close()
+        # Strategy 2: pdf2docx (Fallback)
+        if not conversion_success:
+            if not PDF2DOCX_AVAILABLE:
+                raise ImportError("pdf2docx library not installed and Word conversion failed.")
+            
+            logger.info("Falling back to pdf2docx")
+            try:
+                # Use multiprocessing for speedup
+                # cpu_count should be standard import
+                cv = Converter(original_path)
+                cv.convert(converted_path, start=0, end=None, multi_processing=True, cpu_count=4)
+                cv.close()
+                conversion_success = True
+            except Exception as e:
+                logger.error(f"pdf2docx failed: {e}")
+                raise
 
-        # Clean up original file
-        try:
-            if os.path.exists(original_path):
-                os.remove(original_path)
-        except Exception as e:
-            logger.warning(f"Could not remove temporary file {original_path}: {e}")
-
-        # Wait a moment for file system to catch up
-        time.sleep(0.1)
-
-        if not os.path.exists(converted_path):
-            raise Exception("Conversion completed but output file was not created")
+        if not conversion_success or not os.path.exists(converted_path):
+            raise Exception("Conversion failed to produce output file.")
 
         converted_size = os.path.getsize(converted_path)
 
@@ -94,48 +135,36 @@ def convert_pdf_to_doc(file: FileStorage) -> dict:
         }
 
     except Exception as exc:
-        logger.error(f"Failed to convert PDF {filename} to DOCX: {exc}", exc_info=True)
-        # Clean up on error
-        try:
-            if os.path.exists(original_path):
-                os.remove(original_path)
-            if os.path.exists(converted_path):
-                os.remove(converted_path)
-        except Exception:
-            pass
+        logger.error(f"Failed to convert PDF to DOCX: {exc}", exc_info=True)
         raise
+    finally:
+        # Cleanup input file
+        if os.path.exists(original_path):
+            try:
+                os.remove(original_path)
+            except:
+                pass
 
 
 @measure_duration
 def convert_doc_to_pdf(file: FileStorage) -> dict:
     """
-    Convert a DOCX file to PDF format preserving all formatting, images, and styles.
+    Convert a DOCX file to PDF format.
+    Uses docx2pdf (Word Automation).
 
     Args:
         file: Uploaded DOCX file.
 
     Returns:
-        Dictionary containing:
-            - filename: Converted file name
-            - path: Absolute path to the converted PDF file
-            - original_size: Original file size in bytes
-            - converted_size: Converted file size in bytes
+        Result dictionary.
     """
     if not DOCX2PDF_AVAILABLE:
-        raise ImportError(
-            "docx2pdf library is not installed. Please install it using: "
-            "pip install docx2pdf\n\n"
-            "Note: This library requires LibreOffice or Microsoft Word to be installed.\n"
-            "For Windows: Install Microsoft Word or LibreOffice\n"
-            "For Linux/Mac: Install LibreOffice (sudo apt-get install libreoffice)"
-        )
+        raise ImportError("docx2pdf library not installed.")
 
     upload_folder = current_app.config["UPLOAD_FOLDER"]
     os.makedirs(upload_folder, exist_ok=True)
 
     filename = secure_filename(file.filename)
-
-    # Get base filename without extension and add unique identifier
     base_name = os.path.splitext(filename)[0]
     unique_id = uuid.uuid4().hex[:8]
     converted_filename = f"converted_{base_name}_{unique_id}.pdf"
@@ -146,30 +175,34 @@ def convert_doc_to_pdf(file: FileStorage) -> dict:
         file.save(original_path)
         original_size = os.path.getsize(original_path)
 
-        # Delete output file if it exists (to avoid permission issues)
         if os.path.exists(converted_path):
+             try:
+                 os.remove(converted_path)
+             except:
+                 pass
+
+        # Windows Threading Safety
+        if os.name == 'nt':
             try:
-                os.remove(converted_path)
-                time.sleep(0.1)  # Small delay to ensure file is released
-            except Exception as e:
-                logger.warning(f"Could not remove existing file {converted_path}: {e}")
-
-        # Convert DOCX to PDF using docx2pdf
-        # This preserves all formatting, images, alignment, fonts, and styles
-        convert(original_path, converted_path)
-
-        # Clean up original file
-        try:
-            if os.path.exists(original_path):
-                os.remove(original_path)
-        except Exception as e:
-            logger.warning(f"Could not remove temporary file {original_path}: {e}")
-
-        # Wait a moment for file system to catch up
-        time.sleep(0.1)
+                import pythoncom
+                pythoncom.CoInitialize()
+            except:
+                pass
+        
+        from docx2pdf import convert as d2p_convert
+        
+        # docx2pdf opens Word.
+        d2p_convert(original_path, converted_path)
+        
+        if os.name == 'nt':
+             try:
+                 import pythoncom
+                 pythoncom.CoUninitialize()
+             except:
+                 pass
 
         if not os.path.exists(converted_path):
-            raise Exception("Conversion completed but output file was not created")
+            raise Exception("Conversion completed but PDF not found.")
 
         converted_size = os.path.getsize(converted_path)
 
@@ -181,37 +214,15 @@ def convert_doc_to_pdf(file: FileStorage) -> dict:
         }
 
     except Exception as exc:
-        logger.error(f"Failed to convert DOCX {filename} to PDF: {exc}", exc_info=True)
-        # Clean up on error
-        try:
-            if os.path.exists(original_path):
-                os.remove(original_path)
-            if os.path.exists(converted_path):
-                os.remove(converted_path)
-        except Exception:
-            pass
-        
-        # Provide helpful error message
-        error_msg = str(exc)
-        if "LibreOffice" in error_msg or "soffice" in error_msg.lower():
-            raise Exception(
-                "LibreOffice is required but not found. Please install LibreOffice:\n"
-                "Windows: Download from https://www.libreoffice.org/\n"
-                "Linux: sudo apt-get install libreoffice\n"
-                "Mac: brew install --cask libreoffice"
-            )
-        elif "Word" in error_msg or "win32com" in error_msg.lower():
-            raise Exception(
-                "Microsoft Word is required but not found. Please install Microsoft Word "
-                "or use LibreOffice as an alternative."
-            )
-        elif "Permission denied" in error_msg or "[Errno 13]" in error_msg:
-            raise Exception(
-                f"Permission denied while accessing file. This may happen if:\n"
-                "1. The file is open in another program (Word/LibreOffice)\n"
-                "2. Antivirus is scanning the file\n"
-                "3. File permissions are restricted\n"
-                "Please close any programs using the file and try again."
-            )
+        logger.error(f"Failed to convert DOCX to PDF: {exc}", exc_info=True)
+        msg = str(exc)
+        if "Word" in msg or "win32com" in msg:
+             raise Exception("Microsoft Word conversion failed. Please ensure Word is installed and not busy.")
         raise
+    finally:
+        if os.path.exists(original_path):
+             try:
+                 os.remove(original_path)
+             except:
+                 pass
 
