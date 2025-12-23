@@ -10,8 +10,10 @@ def create_app() -> Flask:
     Create and configures the Flask application.
     """
     app = Flask(__name__)
-    upload_folder = os.path.join(app.root_path, "..", "static", "uploads")
-    upload_folder = os.path.normpath(upload_folder)
+    app = Flask(__name__)
+    # Use system temporary directory to avoid cluttering project folder
+    import tempfile
+    upload_folder = os.path.join(tempfile.gettempdir(), "utility_web_uploads")
     os.makedirs(upload_folder, exist_ok=True)
 
     app.config["UPLOAD_FOLDER"] = upload_folder
