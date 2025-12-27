@@ -1,91 +1,97 @@
 {% extends "base.html" %}
-{% block title %}Home | Utility WebApp{% endblock %}
+
+{% block title %}All-in-One Digital Utility Hub | Utility WebApp{% endblock %}
+
+{% block meta_description %}The ultimate digital utility hub. Compress images, convert formats, remove backgrounds with
+AI, edit PDFs, and generate QR codes—all for free and in one place.{% endblock %}
+
 {% block content %}
-<div class="text-center mb-5">
-  <h1 class="hero-title">NEXT-GEN UTILITIES</h1>
-  <p class="hero-subtitle">Optimize. Convert. Create. All your digital tools in one sleek interface.</p>
+<div class="text-center mb-5 py-5">
+  <h1 class="hero-title display-3 fw-bold mb-3">ALL-IN-ONE DIGITAL UTILITY HUB</h1>
+  <p class="hero-subtitle lead mb-4">Optimize, Convert, and Create. Professional-grade digital tools in one sleek,
+    ultra-fast interface.</p>
+  <div class="d-flex justify-content-center gap-3">
+    <a href="#tools-grid" class="btn btn-primary btn-lg px-4">Get Started</a>
+    <a href="#why-us" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+  </div>
 </div>
 
-<!-- Ad Slot (In-Feed) -->
-<div class="ad-container ad-leaderboard mb-5">
-  <span>Advertisement Space (Sponsored)</span>
-</div>
-
-<div class="row g-4">
+<div id="tools-grid" class="row g-4 mb-5">
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">🔧</h2>
+        <div class="tool-icon mb-3">🔧</div>
         <h4 class="card-title">Image Compression</h4>
-        <p class="card-text">Reduce file size of JPEG/PNG images intelligently.</p>
+        <p class="card-text">Reduce file size of JPEG/PNG images intelligently without losing quality.</p>
         <a href="/compress" class="btn btn-primary w-100 stretched-link">Compress Image</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">🔄</h2>
+        <div class="tool-icon mb-3">🔄</div>
         <h4 class="card-title">Image Conversion</h4>
-        <p class="card-text">Transform images between modern formats easily.</p>
+        <p class="card-text">Transform images between modern formats like WEBP, PNG, and JPG easily.</p>
         <a href="/convert-image" class="btn btn-primary w-100 stretched-link">Convert Format</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">🖼️</h2>
+        <div class="tool-icon mb-3">🖼️</div>
         <h4 class="card-title">Background Remover</h4>
-        <p class="card-text">AI-powered background removal and replacement.</p>
+        <p class="card-text">AI-powered background removal. Instant transparency or solid color replacement.</p>
         <a href="/remove-background" class="btn btn-primary w-100 stretched-link">Remove Background</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">✍️</h2>
+        <div class="tool-icon mb-3">✍️</div>
         <h4 class="card-title">Sign PDF</h4>
-        <p class="card-text">Interactive signature overlay for your documents.</p>
+        <p class="card-text">Interactive signature overlay. Sign your documents digitally in seconds.</p>
         <a href="/sign-pdf" class="btn btn-primary w-100 stretched-link">Sign PDF</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">📝</h2>
+        <div class="tool-icon mb-3">📝</div>
         <h4 class="card-title">PDF to Word</h4>
-        <p class="card-text">High-fidelity conversion preserving layout.</p>
+        <p class="card-text">High-fidelity conversion preserving original layout and formatting.</p>
         <a href="/convert-pdf-doc" class="btn btn-primary w-100 stretched-link">Convert PDF &rarr; Word</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">📄</h2>
+        <div class="tool-icon mb-3">📄</div>
         <h4 class="card-title">Word to PDF</h4>
-        <p class="card-text">Convert DOCX documents to professional PDFs.</p>
+        <p class="card-text">Convert DOCX documents to professional-grade PDFs instantly.</p>
         <a href="/convert-doc-pdf" class="btn btn-primary w-100 stretched-link">Convert Word &rarr; PDF</a>
       </div>
     </div>
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">📦</h2>
-        <h4 class="card-title">PDF Tools</h4>
-        <p class="card-text">Compress and Edit (Merge, Split, Rotate) PDFs.</p>
+        <div class="tool-icon mb-3">📦</div>
+        <h4 class="card-title">Advanced PDF Tools</h4>
+        <p class="card-text">Compress large PDFs and perform advanced edits like merging and splitting.</p>
         <div class="d-grid gap-2">
-          <a href="/compress-pdf" class="btn btn-secondary btn-sm" style="position: relative; z-index: 2;">Compress</a>
+          <a href="/compress-pdf" class="btn btn-secondary btn-sm" style="position: relative; z-index: 2;">Compress
+            PDF</a>
           <a href="/edit-pdf" class="btn btn-secondary btn-sm" style="position: relative; z-index: 2;">Edit Tools</a>
         </div>
       </div>
@@ -93,14 +99,89 @@
   </div>
 
   <div class="col-md-6 col-lg-4">
-    <div class="card h-100">
+    <div class="card h-100 tool-card">
       <div class="card-body text-center">
-        <h2 class="mb-3">📱</h2>
+        <div class="tool-icon mb-3">📱</div>
         <h4 class="card-title">QR Generator</h4>
-        <p class="card-text">Generate customizable QR codes instantly.</p>
+        <p class="card-text">Generate customizable QR codes for links, text, or contact info instantly.</p>
         <a href="/qr" class="btn btn-primary w-100 stretched-link">Create QR</a>
       </div>
     </div>
   </div>
 </div>
+
+<section id="why-us" class="py-5 mb-5 bg-white rounded shadow-sm px-4">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Why Utility WebApp?</h2>
+    <p class="text-muted">Built for speed, privacy, and ease of use.</p>
+  </div>
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <div class="p-3">
+        <h3 class="h1 mb-3">🔒</h3>
+        <h5>Privacy First</h5>
+        <p>Your files are processed securely. We don't store your personal data or files longer than necessary.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3">
+        <h3 class="h1 mb-3">⚡</h3>
+        <h5>Lightning Fast</h5>
+        <p>Optimized algorithms ensure your tasks are completed in the blink of an eye.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3">
+        <h3 class="h1 mb-3">🆓</h3>
+        <h5>100% Free</h5>
+        <p>All our tools are free to use. No hidden costs or complex subscriptions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 mb-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">How It Works</h2>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="text-center">
+        <div class="display-4 fw-bold text-primary mb-3">1</div>
+        <h5>Select Tool</h5>
+        <p>Choose the tool you need from our comprehensive dashboard.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="text-center">
+        <div class="display-4 fw-bold text-primary mb-3">2</div>
+        <h5>Upload File</h5>
+        <p>Drag and drop or select your file to start the process.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="text-center">
+        <div class="display-4 fw-bold text-primary mb-3">3</div>
+        <h5>Download Result</h5>
+        <p>Get your optimized or converted file instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Utility WebApp",
+  "url": "{{ request.url_root }}",
+  "description": "Free collection of digital tools for image compression, conversion, background removal, PDF editing, and QR generation.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ request.url_root }}search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 {% endblock %}

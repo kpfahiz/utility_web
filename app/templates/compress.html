@@ -1,48 +1,107 @@
 {% extends "base.html" %}
-{% block title %}Compress Image{% endblock %}
+
+{% block title %}Compress Image Online - Reduce Page Load Times | Utility WebApp{% endblock %}
+
+{% block meta_description %}Compress JPEG and PNG images for free without losing quality. Our intelligent compression
+tool helps you reduce file sizes and optimize images for the web.{% endblock %}
+
 {% block content %}
-  <h2 class="mb-4">🔧 Compress Your Image</h2>
-  
-  {% if compressed %}
-  <div class="alert alert-success mb-4">
-    <h5 class="alert-heading">✅ Compression Successful!</h5>
-    <hr>
-    <div class="row">
-      <div class="col-md-6">
-        <p class="mb-1"><strong>Original Size:</strong> 
-          {% if original_size_mb >= 1 %}
-            {{ "%.2f"|format(original_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(original_size_kb) }} KB
-          {% endif %}
-        </p>
-        <p class="mb-1"><strong>Compressed Size:</strong> 
-          {% if compressed_size_mb >= 1 %}
-            {{ "%.2f"|format(compressed_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(compressed_size_kb) }} KB
-          {% endif %}
-        </p>
-        <p class="mb-0"><strong>Compression:</strong> 
-          <span class="badge bg-success">{{ "%.1f"|format(compression_percentage) }}% reduction</span>
-        </p>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm mb-5">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Image Compression Tool</h4>
+      </div>
+      <div class="card-body">
+        {% if compressed %}
+        <div class="alert alert-success mb-4 border-success-subtle">
+          <h5 class="alert-heading fw-bold">✅ Compression Successful!</h5>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Original Size:</strong>
+                {% if original_size_mb >= 1 %}
+                {{ "%.2f"|format(original_size_mb) }} MB
+                {% else %}
+                {{ "%.2f"|format(original_size_kb) }} KB
+                {% endif %}
+              </p>
+              <p class="mb-1"><strong>Compressed Size:</strong>
+                {% if compressed_size_mb >= 1 %}
+                {{ "%.2f"|format(compressed_size_mb) }} MB
+                {% else %}
+                {{ "%.2f"|format(compressed_size_kb) }} KB
+                {% endif %}
+              </p>
+              <p class="mb-0"><strong>Compression:</strong>
+                <span class="badge bg-success">{{ "%.1f"|format(compression_percentage) }}% reduction</span>
+              </p>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex gap-2">
+            <a href="/download/{{ download_name }}" class="btn btn-success px-4" download>Download Image</a>
+            <a href="/compress" class="btn btn-outline-secondary">Compress Another</a>
+          </div>
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="mb-3">
+          <div class="mb-4">
+            <label for="image" class="form-label fw-semibold">Select Image (JPEG/PNG)</label>
+            <input type="file" class="form-control" name="image" id="image" accept="image/jpeg,image/png" required>
+            <div class="form-text">Upload images up to 10MB for best results.</div>
+          </div>
+          <div class="mb-4">
+            <label for="quality" class="form-label fw-semibold">Compression Quality: <span
+                id="quality_val">30</span>%</label>
+            <input type="range" class="form-range" name="quality" id="quality" value="30" min="1" max="100"
+              oninput="document.getElementById('quality_val').textContent = this.value">
+            <div class="form-text d-flex justify-content-between">
+              <span>Higher Compression</span>
+              <span>Better Quality</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 py-2">Optimize & Compress</button>
+        </form>
       </div>
     </div>
-    <hr>
-    <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Compressed Image</a>
-    <a href="/compress" class="btn btn-secondary">Compress Another Image</a>
+
+    <!-- SEO Content Section -->
+    <section class="mb-5">
+      <h2 class="h3 fw-bold mb-4">Why Compress Your Images?</h2>
+      <p class="text-muted">High-resolution images can significantly slow down your website. Our tool uses smart lossy
+        compression to reduce file size while maintaining a professional visual appearance.</p>
+
+      <div class="row g-4 mt-2">
+        <div class="col-md-6">
+          <div class="p-3 border rounded shadow-sm h-100">
+            <h5 class="fw-bold">🚀 Improve SEO</h5>
+            <p class="small text-muted mb-0">Faster page loads lead to better search engine rankings and lower bounce
+              rates.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 border rounded shadow-sm h-100">
+            <h5 class="fw-bold">📱 Mobile Friendly</h5>
+            <p class="small text-muted mb-0">Compressed images consume less data, providing a better experience for
+              mobile users.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <h4 class="fw-bold mb-3">How to use:</h4>
+        <ul class="text-muted">
+          <li class="mb-2"><strong>Upload:</strong> Click the "Select Image" button to choose your JPEG or PNG file.
+          </li>
+          <li class="mb-2"><strong>Adjust Quality:</strong> Use the slider to balance file size and visual quality.
+            Initial 30% is recommended for most web uses.</li>
+          <li><strong>Download:</strong> Click "Optimize & Compress" and then download your lightweight image instantly.
+          </li>
+        </ul>
+      </div>
+    </section>
   </div>
-  {% endif %}
-  
-  <form method="POST" enctype="multipart/form-data" class="mb-3">
-    <div class="mb-3">
-      <label for="image" class="form-label">Select Image (JPEG/PNG)</label>
-      <input type="file" class="form-control" name="image" required>
-    </div>
-    <div class="mb-3">
-      <label for="quality" class="form-label">Compression Quality (1–100)</label>
-      <input type="number" class="form-control" name="quality" value="30" min="1" max="100">
-    </div>
-    <button type="submit" class="btn btn-primary">Compress</button>
-  </form>
+</div>
 {% endblock %}

@@ -1,132 +1,120 @@
 {% extends "base.html" %}
-{% block title %}Convert Image{% endblock %}
+{% block title %}Convert Image Online - Support for Multiple Formats | Utility WebApp{% endblock %}
+{% block meta_description %}Convert images between formats like PNG, JPEG, WEBP, and GIF effortlessly. Our online
+converter is fast, free, and supports high-quality conversions.{% endblock %}
 {% block content %}
-  <h2 class="mb-4">🔄 Convert Image Format</h2>
-  
-  {% if error %}
-  <div class="alert alert-danger mb-4">
-    <strong>Error:</strong> {{ error }}
-  </div>
-  {% endif %}
-  
-  {% if converted %}
-  <div class="alert alert-success mb-4">
-    <h5 class="alert-heading">✅ Conversion Successful!</h5>
-    <hr>
-    <div class="row">
-      <div class="col-md-6">
-        <p class="mb-1"><strong>Original Format:</strong> 
-          <span class="badge bg-secondary">{{ original_format }}</span>
-        </p>
-        <p class="mb-1"><strong>Target Format:</strong> 
-          <span class="badge bg-primary">{{ target_format }}</span>
-        </p>
-        <p class="mb-1"><strong>Original Size:</strong> 
-          {% if original_size_mb >= 1 %}
-            {{ "%.2f"|format(original_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(original_size_kb) }} KB
-          {% endif %}
-        </p>
-        <p class="mb-0"><strong>Converted Size:</strong> 
-          {% if converted_size_mb >= 1 %}
-            {{ "%.2f"|format(converted_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(converted_size_kb) }} KB
-          {% endif %}
-        </p>
-      </div>
-    </div>
-    <hr>
-    <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Converted Image</a>
-    <a href="/convert-image" class="btn btn-secondary">Convert Another Image</a>
-  </div>
-  {% endif %}
-  
-  <form method="POST" enctype="multipart/form-data" class="mb-3">
-    <div class="mb-3">
-      <label for="image" class="form-label">Select Image File</label>
-      <input 
-        type="file" 
-        class="form-control" 
-        name="image" 
-        accept="image/*" 
-        required
-      >
-      <small class="form-text text-muted">Supports JPEG, PNG, GIF, BMP, TIFF, WebP, ICO, and more.</small>
-    </div>
-    
-    <div class="mb-3">
-      <label for="target_format" class="form-label">Target Format</label>
-      <select class="form-select" name="target_format" id="target_format" required>
-        {% for format_key, format_info in supported_formats.items() %}
-          <option value="{{ format_key }}" {% if format_key == 'PNG' %}selected{% endif %}>
-            {{ format_info.name }} ({{ format_info.ext }})
-            {% if format_info.supports_alpha %} - Supports transparency{% endif %}
-          </option>
-        {% endfor %}
-      </select>
-      <small class="form-text text-muted">Choose the format you want to convert your image to.</small>
-    </div>
-    
-    <div class="mb-3" id="quality_group">
-      <label for="quality" class="form-label">Quality (for JPEG/WebP) (1–100)</label>
-      <input 
-        type="number" 
-        class="form-control" 
-        name="quality" 
-        id="quality" 
-        value="95" 
-        min="1" 
-        max="100"
-      >
-      <small class="form-text text-muted">Higher quality means larger file size. Only applies to JPEG and WebP formats.</small>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Convert Image</button>
-  </form>
-  
-  <div class="card mt-4">
-    <div class="card-header">
-      <h5 class="mb-0">Supported Formats</h5>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        {% for format_key, format_info in supported_formats.items() %}
-          <div class="col-md-4 mb-2">
-            <strong>{{ format_info.name }}</strong> ({{ format_info.ext }})
-            {% if format_info.supports_alpha %}
-              <span class="badge bg-info">Transparency</span>
-            {% else %}
-              <span class="badge bg-secondary">No Transparency</span>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  
-  <div class="mt-4">
-    <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
-  </div>
-  
-  <script>
-    // Show/hide quality input based on selected format
-    document.getElementById('target_format').addEventListener('change', function() {
-      const selectedFormat = this.value.toUpperCase();
-      const qualityGroup = document.getElementById('quality_group');
-      
-      if (selectedFormat === 'JPEG' || selectedFormat === 'WEBP') {
-        qualityGroup.style.display = 'block';
-        document.getElementById('quality').setAttribute('required', 'required');
-      } else {
-        qualityGroup.style.display = 'none';
-        document.getElementById('quality').removeAttribute('required');
-      }
-    });
-    
-    // Initialize on page load
-    document.getElementById('target_format').dispatchEvent(new Event('change'));
-  </script>
-{% endblock %}
+<h2 class="mb-4">🔄 Convert Image Format</h2>
 
+{% if error %}
+<div class="alert alert-danger mb-4">
+  <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+{% if converted %}
+<div class="alert alert-success mb-4">
+  <h5 class="alert-heading">✅ Conversion Successful!</h5>
+  <hr>
+  <div class="row">
+    <div class="col-md-6">
+      <p class="mb-1"><strong>Original Format:</strong>
+        <span class="badge bg-secondary">{{ original_format }}</span>
+      </p>
+      <p class="mb-1"><strong>Target Format:</strong>
+        <span class="badge bg-primary">{{ target_format }}</span>
+      </p>
+      <p class="mb-1"><strong>Original Size:</strong>
+        {% if original_size_mb >= 1 %}
+        {{ "%.2f"|format(original_size_mb) }} MB
+        {% else %}
+        {{ "%.2f"|format(original_size_kb) }} KB
+        {% endif %}
+      </p>
+      <p class="mb-0"><strong>Converted Size:</strong>
+        {% if converted_size_mb >= 1 %}
+        {{ "%.2f"|format(converted_size_mb) }} MB
+        {% else %}
+        {{ "%.2f"|format(converted_size_kb) }} KB
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <hr>
+  <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Converted Image</a>
+  <a href="/convert-image" class="btn btn-secondary">Convert Another Image</a>
+</div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" class="mb-3">
+  <div class="mb-3">
+    <label for="image" class="form-label">Select Image File</label>
+    <input type="file" class="form-control" name="image" accept="image/*" required>
+    <small class="form-text text-muted">Supports JPEG, PNG, GIF, BMP, TIFF, WebP, ICO, and more.</small>
+  </div>
+
+  <div class="mb-3">
+    <label for="target_format" class="form-label">Target Format</label>
+    <select class="form-select" name="target_format" id="target_format" required>
+      {% for format_key, format_info in supported_formats.items() %}
+      <option value="{{ format_key }}" {% if format_key=='PNG' %}selected{% endif %}>
+        {{ format_info.name }} ({{ format_info.ext }})
+        {% if format_info.supports_alpha %} - Supports transparency{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    <small class="form-text text-muted">Choose the format you want to convert your image to.</small>
+  </div>
+
+  <div class="mb-3" id="quality_group">
+    <label for="quality" class="form-label">Quality (for JPEG/WebP) (1–100)</label>
+    <input type="number" class="form-control" name="quality" id="quality" value="95" min="1" max="100">
+    <small class="form-text text-muted">Higher quality means larger file size. Only applies to JPEG and WebP
+      formats.</small>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Convert Image</button>
+</form>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <h5 class="mb-0">Supported Formats</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      {% for format_key, format_info in supported_formats.items() %}
+      <div class="col-md-4 mb-2">
+        <strong>{{ format_info.name }}</strong> ({{ format_info.ext }})
+        {% if format_info.supports_alpha %}
+        <span class="badge bg-info">Transparency</span>
+        {% else %}
+        <span class="badge bg-secondary">No Transparency</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+</div>
+
+<script>
+  // Show/hide quality input based on selected format
+  document.getElementById('target_format').addEventListener('change', function () {
+    const selectedFormat = this.value.toUpperCase();
+    const qualityGroup = document.getElementById('quality_group');
+
+    if (selectedFormat === 'JPEG' || selectedFormat === 'WEBP') {
+      qualityGroup.style.display = 'block';
+      document.getElementById('quality').setAttribute('required', 'required');
+    } else {
+      qualityGroup.style.display = 'none';
+      document.getElementById('quality').removeAttribute('required');
+    }
+  });
+
+  // Initialize on page load
+  document.getElementById('target_format').dispatchEvent(new Event('change'));
+</script>
+{% endblock %}

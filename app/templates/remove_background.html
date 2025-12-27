@@ -1,9 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Remove Background | Utility WebApp{% endblock %}
+
+{% block title %}Remove Background from Image Online | Utility WebApp{% endblock %}
+
+{% block meta_description %}Remove backgrounds from any image instantly for free. Our AI-powered tool provides
+professional results with transparency or solid color replacement.{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-5">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Remove Background</h4>
             </div>
@@ -33,7 +38,7 @@
                         <div class="form-text">Check the box to replace transparency with the selected color.</div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Remove Background</button>
+                    <button type="submit" class="btn btn-primary w-100 py-2">Remove Background</button>
                 </form>
 
                 {% if error %}
@@ -42,13 +47,13 @@
 
                 {% if processed %}
                 <div class="mt-4 text-center">
-                    <h5>Result</h5>
+                    <hr>
+                    <h5 class="mb-3">Processed Result</h5>
                     <div class="row mt-3">
                         <div class="col-md-6 mb-3">
-                            <h6>Preview</h6>
-                            <!-- Display generated base64 image -->
-                            <img src="{{ image_data_uri }}" class="img-fluid border rounded" alt="Processed Image"
-                                style="max-height: 400px;">
+                            <h6 class="text-muted">Preview</h6>
+                            <img src="{{ image_data_uri }}" class="img-fluid border rounded shadow-sm"
+                                alt="Background Removed Result" style="max-height: 400px;">
                         </div>
                         <div class="col-md-6 d-flex flex-column justify-content-center">
                             <ul class="list-group mb-3">
@@ -64,15 +69,15 @@
                                 </li>
                             </ul>
 
-                            <div class="mb-3">
-                                <label for="filename_input" class="form-label">Filename</label>
+                            <div class="mb-3 text-start">
+                                <label for="filename_input" class="form-label">Download Filename</label>
                                 <input type="text" class="form-control" id="filename_input" value="{{ download_name }}">
                             </div>
 
                             <a href="/download-bg-removed/{{ download_name }}"
                                 data-original-href="/download-bg-removed/{{ download_name }}" id="download_btn"
-                                class="btn btn-success btn-lg">
-                                Download Image
+                                class="btn btn-success btn-lg shadow-sm">
+                                Download High-Res Image
                             </a>
                         </div>
                     </div>
@@ -80,6 +85,76 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- SEO Content Section -->
+        <section class="mt-5 mb-5 pb-5">
+            <h2 class="h3 fw-bold mb-4">How to Remove Image Backgrounds Online</h2>
+            <p class="text-muted mb-4">Our AI-powered tool makes background removal effortless. Whether you're preparing
+                products for an e-commerce store or creating custom social media graphics, we've got you covered.</p>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <h5 class="fw-bold">1. Upload</h5>
+                    <p class="small text-muted">Select your image from your device. We support JPG, PNG, and WEBP
+                        formats.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold">2. Customize</h5>
+                    <p class="small text-muted">Choose between a transparent background or pick a solid color for
+                        replacement.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold">3. Download</h5>
+                    <p class="small text-muted">Get your processed, high-quality image instantly with reduced file size.
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="h4 fw-bold mb-4">Frequently Asked Questions</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Is the background removal quality professional?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes! We use advanced AI models to detect subjects and remove backgrounds with high
+                            precision, comparable to manual editing.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq2">
+                            Can I replace the background with a specific color?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Absolutely. You can toggle the "Use Solid Color" option and pick any color using our
+                            integrated color selector.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faq3">
+                            Is my data safe?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We value your privacy. Uploaded images are processed and then automatically deleted from our
+                            servers after a short period.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
 
@@ -103,12 +178,10 @@
         const downloadBtn = document.getElementById('download_btn');
 
         if (filenameInput && downloadBtn) {
-            // Use data attribute to keep the clean URL source of truth
             const originalHref = downloadBtn.getAttribute('data-original-href');
 
             filenameInput.addEventListener('input', function () {
                 const newName = filenameInput.value.trim();
-                console.log("Renaming to:", newName);
                 if (newName) {
                     const separator = originalHref.includes('?') ? '&' : '?';
                     downloadBtn.setAttribute('href', `${originalHref}${separator}name=${encodeURIComponent(newName)}`);

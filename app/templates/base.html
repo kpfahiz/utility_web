@@ -4,6 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="{% block meta_description %}Free collection of digital tools for image compression, conversion, background removal, PDF editing, and QR generation.{% endblock %}">
+  <meta name="keywords"
+    content="{% block meta_keywords %}utility web, image compressor, pdf editor, qr generator, background remover, online tools{% endblock %}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+  <meta property="og:description" content="{{ self.meta_description() }}">
+  <meta property="og:image" content="{{ url_for('static', filename='img/og-image.jpg', _external=True) }}">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="{{ request.url }}">
+  <meta property="twitter:title" content="{{ self.og_title() }}">
+  <meta property="twitter:description" content="{{ self.meta_description() }}">
+  <meta property="twitter:image" content="{{ url_for('static', filename='img/og-image.jpg', _external=True) }}">
+
   <title>{% block title %}Utility WebApp{% endblock %}</title>
 
   <!-- Google Fonts: Outfit (Headings) and Inter (Body) -->

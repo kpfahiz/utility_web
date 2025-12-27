@@ -1,142 +1,139 @@
 {% extends "base.html" %}
-{% block title %}Convert PDF/DOC{% endblock %}
+{% block title %}Convert PDF to Word and DOC to PDF Online | Utility WebApp{% endblock %}
+{% block meta_description %}High-fidelity conversion between PDF and Word documents. Convert PDF to editable DOCX or
+transform Word files into professional PDFs instantly.{% endblock %}
 {% block content %}
-  <h2 class="mb-4">
-    {% if conversion_type == "pdf-to-doc" %}
-      📄➡️📝 Convert PDF to DOC
-    {% else %}
-      📝➡️📄 Convert DOC to PDF
-    {% endif %}
-  </h2>
-  
-  {% if error %}
-  <div class="alert alert-danger mb-4">
-    <strong>Error:</strong> {{ error }}
-  </div>
+<h2 class="mb-4">
+  {% if conversion_type == "pdf-to-doc" %}
+  📄➡️📝 Convert PDF to DOC
+  {% else %}
+  📝➡️📄 Convert DOC to PDF
   {% endif %}
-  
-  {% if converted %}
-  <div class="alert alert-success mb-4">
-    <h5 class="alert-heading">✅ Conversion Successful!</h5>
-    <hr>
-    <div class="row">
-      <div class="col-md-6">
-        <p class="mb-1"><strong>Original Size:</strong> 
-          {% if original_size_mb >= 1 %}
-            {{ "%.2f"|format(original_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(original_size_kb) }} KB
-          {% endif %}
-        </p>
-        <p class="mb-0"><strong>Converted Size:</strong> 
-          {% if converted_size_mb >= 1 %}
-            {{ "%.2f"|format(converted_size_mb) }} MB
-          {% else %}
-            {{ "%.2f"|format(converted_size_kb) }} KB
-          {% endif %}
-        </p>
-      </div>
-    </div>
-    <hr>
-    <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Converted File</a>
-    {% if conversion_type == "pdf-to-doc" %}
-      <a href="/convert-pdf-doc" class="btn btn-secondary">Convert Another PDF</a>
-    {% else %}
-      <a href="/convert-doc-pdf" class="btn btn-secondary">Convert Another DOC</a>
-    {% endif %}
-  </div>
-  {% endif %}
-  
-  <div class="mb-4">
-    <div class="btn-group" role="group" aria-label="Conversion type">
-      <a href="/convert-pdf-doc" class="btn {% if conversion_type == 'pdf-to-doc' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        PDF ➡️ DOC
-      </a>
-      <a href="/convert-doc-pdf" class="btn {% if conversion_type == 'doc-to-pdf' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
-        DOC ➡️ PDF
-      </a>
+</h2>
+
+{% if error %}
+<div class="alert alert-danger mb-4">
+  <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+{% if converted %}
+<div class="alert alert-success mb-4">
+  <h5 class="alert-heading">✅ Conversion Successful!</h5>
+  <hr>
+  <div class="row">
+    <div class="col-md-6">
+      <p class="mb-1"><strong>Original Size:</strong>
+        {% if original_size_mb >= 1 %}
+        {{ "%.2f"|format(original_size_mb) }} MB
+        {% else %}
+        {{ "%.2f"|format(original_size_kb) }} KB
+        {% endif %}
+      </p>
+      <p class="mb-0"><strong>Converted Size:</strong>
+        {% if converted_size_mb >= 1 %}
+        {{ "%.2f"|format(converted_size_mb) }} MB
+        {% else %}
+        {{ "%.2f"|format(converted_size_kb) }} KB
+        {% endif %}
+      </p>
     </div>
   </div>
-  
-  <form method="POST" enctype="multipart/form-data" class="mb-3">
-    <div class="mb-3">
-      <label for="file" class="form-label">
-        {% if conversion_type == "pdf-to-doc" %}
-          Select PDF File
-        {% else %}
-          Select DOC/DOCX File
-        {% endif %}
-      </label>
-      <input 
-        type="file" 
-        class="form-control" 
-        name="file" 
-        {% if conversion_type == "pdf-to-doc" %}
-          accept=".pdf,application/pdf"
-        {% else %}
-          accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        {% endif %}
-        required
-      >
-      <small class="form-text text-muted">
-        {% if conversion_type == "pdf-to-doc" %}
-          Upload a PDF file to convert it to DOCX format.
-        {% else %}
-          Upload a DOC or DOCX file to convert it to PDF format.
-        {% endif %}
+  <hr>
+  <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Converted File</a>
+  {% if conversion_type == "pdf-to-doc" %}
+  <a href="/convert-pdf-doc" class="btn btn-secondary">Convert Another PDF</a>
+  {% else %}
+  <a href="/convert-doc-pdf" class="btn btn-secondary">Convert Another DOC</a>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="mb-4">
+  <div class="btn-group" role="group" aria-label="Conversion type">
+    <a href="/convert-pdf-doc"
+      class="btn {% if conversion_type == 'pdf-to-doc' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      PDF ➡️ DOC
+    </a>
+    <a href="/convert-doc-pdf"
+      class="btn {% if conversion_type == 'doc-to-pdf' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+      DOC ➡️ PDF
+    </a>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="mb-3">
+  <div class="mb-3">
+    <label for="file" class="form-label">
+      {% if conversion_type == "pdf-to-doc" %}
+      Select PDF File
+      {% else %}
+      Select DOC/DOCX File
+      {% endif %}
+    </label>
+    <input type="file" class="form-control" name="file" {% if conversion_type=="pdf-to-doc" %}
+      accept=".pdf,application/pdf" {% else %}
+      accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" {%
+      endif %} required>
+    <small class="form-text text-muted">
+      {% if conversion_type == "pdf-to-doc" %}
+      Upload a PDF file to convert it to DOCX format.
+      {% else %}
+      Upload a DOC or DOCX file to convert it to PDF format.
+      {% endif %}
+    </small>
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    {% if conversion_type == "pdf-to-doc" %}
+    Convert PDF to DOC
+    {% else %}
+    Convert DOC to PDF
+    {% endif %}
+  </button>
+</form>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <h5 class="mb-0">📋 Information</h5>
+  </div>
+  <div class="card-body">
+    {% if conversion_type == "pdf-to-doc" %}
+    <h6>PDF to DOC Conversion</h6>
+    <ul>
+      <li>Converts PDF documents to editable DOCX (Word) format</li>
+      <li>Preserves text, formatting, and basic layout</li>
+      <li>Images and complex layouts may require manual adjustment</li>
+      <li>Best for text-heavy documents</li>
+    </ul>
+    <div class="alert alert-info mt-3">
+      <strong>Note:</strong> Complex PDFs with advanced formatting, tables, or images may not convert perfectly. Review
+      and edit the converted document as needed.
+    </div>
+    {% else %}
+    <h6>DOC to PDF Conversion</h6>
+    <ul>
+      <li>Converts DOC/DOCX documents to PDF format</li>
+      <li><strong>Preserves ALL formatting:</strong> fonts, alignment, styles, colors</li>
+      <li><strong>Preserves images:</strong> including background images</li>
+      <li><strong>Preserves tables:</strong> with all formatting and borders</li>
+      <li><strong>Preserves layout:</strong> margins, page breaks, headers, footers</li>
+      <li>Creates PDF files that look identical to the original document</li>
+    </ul>
+    <div class="alert alert-warning mt-3">
+      <strong>Requirements:</strong> This feature requires LibreOffice or Microsoft Word to be installed on the server.
+      <br>
+      <small>
+        <strong>Windows:</strong> Install Microsoft Word or LibreOffice<br>
+        <strong>Linux:</strong> <code>sudo apt-get install libreoffice</code><br>
+        <strong>Mac:</strong> <code>brew install --cask libreoffice</code>
       </small>
     </div>
-    
-    <button type="submit" class="btn btn-primary">
-      {% if conversion_type == "pdf-to-doc" %}
-        Convert PDF to DOC
-      {% else %}
-        Convert DOC to PDF
-      {% endif %}
-    </button>
-  </form>
-  
-  <div class="card mt-4">
-    <div class="card-header">
-      <h5 class="mb-0">📋 Information</h5>
-    </div>
-    <div class="card-body">
-      {% if conversion_type == "pdf-to-doc" %}
-        <h6>PDF to DOC Conversion</h6>
-        <ul>
-          <li>Converts PDF documents to editable DOCX (Word) format</li>
-          <li>Preserves text, formatting, and basic layout</li>
-          <li>Images and complex layouts may require manual adjustment</li>
-          <li>Best for text-heavy documents</li>
-        </ul>
-        <div class="alert alert-info mt-3">
-          <strong>Note:</strong> Complex PDFs with advanced formatting, tables, or images may not convert perfectly. Review and edit the converted document as needed.
-        </div>
-      {% else %}
-        <h6>DOC to PDF Conversion</h6>
-        <ul>
-          <li>Converts DOC/DOCX documents to PDF format</li>
-          <li><strong>Preserves ALL formatting:</strong> fonts, alignment, styles, colors</li>
-          <li><strong>Preserves images:</strong> including background images</li>
-          <li><strong>Preserves tables:</strong> with all formatting and borders</li>
-          <li><strong>Preserves layout:</strong> margins, page breaks, headers, footers</li>
-          <li>Creates PDF files that look identical to the original document</li>
-        </ul>
-        <div class="alert alert-warning mt-3">
-          <strong>Requirements:</strong> This feature requires LibreOffice or Microsoft Word to be installed on the server.
-          <br>
-          <small>
-            <strong>Windows:</strong> Install Microsoft Word or LibreOffice<br>
-            <strong>Linux:</strong> <code>sudo apt-get install libreoffice</code><br>
-            <strong>Mac:</strong> <code>brew install --cask libreoffice</code>
-          </small>
-        </div>
-      {% endif %}
-    </div>
+    {% endif %}
   </div>
-  
-  <div class="mt-4">
-    <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
-  </div>
-{% endblock %}
+</div>
 
+<div class="mt-4">
+  <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+</div>
+{% endblock %}

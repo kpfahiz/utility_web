@@ -1,82 +1,101 @@
 {% extends "base.html" %}
-{% block title %}Generate QR Code{% endblock %}
-{% block content %}
-  <div class="qr-wrapper">
-    <h2 class="mb-4">📱 Generate a QR Code</h2>
-    <form method="POST" class="mb-4 qr-form">
-      <div class="mb-3">
-        <label for="data" class="form-label">Enter Text or URL</label>
-        <input
-          type="text"
-          class="form-control"
-          name="data"
-          placeholder="https://example.com"
-          value="{{ original_text if generated else '' }}"
-          required
-        >
-      </div>
-      <div class="qr-color-controls row g-3 mb-3">
-        <div class="col-sm-6">
-          <label for="fill_color" class="form-label d-flex align-items-center gap-2">
-            <span>QR Pixel Color</span>
-            <span class="badge text-bg-light text-muted">Foreground</span>
-          </label>
-          <input
-            type="color"
-            class="form-control form-control-color qr-color-input"
-            id="fill_color"
-            name="fill_color"
-            value="{{ fill_color }}"
-            title="Choose the color of the QR code's modules"
-          >
-          <small class="text-muted mt-2 d-block">
-            Choose a darker color for best contrast.
-          </small>
-        </div>
-        <div class="col-sm-6">
-          <label for="background_color" class="form-label d-flex align-items-center gap-2">
-            <span>Background Color</span>
-            <span class="badge text-bg-light text-muted">Canvas</span>
-          </label>
-          <input
-            type="color"
-            class="form-control form-control-color qr-color-input"
-            id="background_color"
-            name="background_color"
-            value="{{ background_color }}"
-            title="Choose the background color behind the QR code"
-          >
-          <small class="text-muted mt-2 d-block">
-            Pick a lighter color to keep the code scannable.
-          </small>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Generate QR</button>
-    </form>
 
-    {% if generated %}
-      <div class="qr-preview card shadow-sm border-0">
-        <div class="card-body">
-          <h5 class="card-title text-uppercase text-muted mb-2">Your QR Code</h5>
-          <p class="card-text small text-muted mb-3">Encoded from: <span class="text-dark">{{ original_text }}</span></p>
-          <div class="qr-color-preview mb-3">
-            <div class="qr-color-swatch">
-              <span class="qr-color-label">Pixel</span>
-              <span class="qr-color-chip" style="--chip-color: {{ fill_color }};"></span>
-              <span class="qr-color-value">{{ fill_color }}</span>
-            </div>
-            <div class="qr-color-swatch">
-              <span class="qr-color-label">Background</span>
-              <span class="qr-color-chip" style="--chip-color: {{ background_color }};"></span>
-              <span class="qr-color-value">{{ background_color }}</span>
-            </div>
+{% block title %}Free QR Code Generator Online | Utility WebApp{% endblock %}
+
+{% block meta_description %}Generate custom QR codes for free. Create QR codes for URLs, text, or Wi-Fi with custom
+colors. Instant download and easy to use.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="qr-wrapper bg-white p-4 rounded shadow-sm mb-5">
+      <h2 class="mb-4 fw-bold">📱 Generate a Custom QR Code</h2>
+      <p class="text-muted mb-4">Create high-quality QR codes for your website, social media, or personal use using our
+        fast and secure generator.</p>
+
+      <form method="POST" class="mb-4 qr-form">
+        <div class="mb-3">
+          <label for="data" class="form-label fw-semibold">Enter Text or URL</label>
+          <input type="text" class="form-control form-control-lg" name="data" id="data"
+            placeholder="https://example.com" value="{{ original_text if generated else '' }}" required>
+          <div class="form-text">Your data is safe and never shared.</div>
+        </div>
+
+        <div class="qr-color-controls row g-3 mb-4">
+          <div class="col-sm-6">
+            <label for="fill_color" class="form-label d-flex align-items-center gap-2">
+              <span class="fw-semibold">QR Pixel Color</span>
+            </label>
+            <input type="color" class="form-control form-control-color w-100" id="fill_color" name="fill_color"
+              value="{{ fill_color or '#000000' }}" title="Choose the color of the QR code's modules">
           </div>
-          <div class="qr-image-container">
-            <img src="{{ qr_data_uri }}" alt="Generated QR Code" class="qr-image">
+          <div class="col-sm-6">
+            <label for="background_color" class="form-label d-flex align-items-center gap-2">
+              <span class="fw-semibold">Background Color</span>
+            </label>
+            <input type="color" class="form-control form-control-color w-100" id="background_color"
+              name="background_color" value="{{ background_color or '#ffffff' }}"
+              title="Choose the background color behind the QR code">
           </div>
-          <a href="/download/{{ download_name }}" class="btn btn-outline-primary mt-3" download>Download PNG</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 py-2">Generate QR Code</button>
+      </form>
+
+      {% if generated %}
+      <div class="qr-preview card border-light bg-light shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title text-uppercase text-muted fw-bold mb-3">Your Generated QR Code</h5>
+          <div class="qr-image-container mb-4">
+            <img src="{{ qr_data_uri }}" alt="Customized QR Code for {{ original_text }}"
+              class="qr-image img-fluid rounded shadow-sm" style="max-height: 250px;">
+          </div>
+          <p class="small text-muted mb-3">Data: <strong class="text-dark">{{ original_text }}</strong></p>
+          <a href="/download/{{ download_name }}" class="btn btn-success btn-lg px-5 shadow-sm" download>Download
+            PNG</a>
         </div>
       </div>
-    {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- SEO Information Section -->
+    <section class="mb-5">
+      <h3 class="fw-bold mb-4">Why Use Our QR Code Generator?</h3>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="h3 text-primary">🎨</div>
+            <div>
+              <h5 class="fw-bold">Fully Customizable</h5>
+              <p class="text-muted small">Personalize your QR codes with custom colors to match your brand or style
+                effortlessly.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="h3 text-primary">⏩</div>
+            <div>
+              <h5 class="fw-bold">Instant & Free</h5>
+              <p class="text-muted small">No signup required. Generate and download high-resolution QR codes in seconds
+                for free.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <h4 class="fw-bold mb-3">How to create a QR code?</h4>
+        <ol class="text-muted">
+          <li class="mb-2"><strong>Enter your Content:</strong> Type or paste the URL, text, or contact information you
+            want to encode.</li>
+          <li class="mb-2"><strong>Customize Colors:</strong> (Optional) Select a foreground and background color for
+            your QR code.</li>
+          <li class="mb-2"><strong>Generate:</strong> Click the "Generate QR Code" button to see your custom code
+            instantly.</li>
+          <li><strong>Download:</strong> Save your QR code as a PNG file and use it anywhere you like!</li>
+        </ol>
+      </div>
+    </section>
   </div>
+</div>
 {% endblock %}
