@@ -3,7 +3,7 @@
 {% block meta_description %}Convert images between formats like PNG, JPEG, WEBP, and GIF effortlessly. Our online
 converter is fast, free, and supports high-quality conversions.{% endblock %}
 {% block content %}
-<h2 class="mb-4">🔄 Convert Image Format</h2>
+<h1 class="mb-4 h2">🔄 Convert Image Format</h1>
 
 {% if error %}
 <div class="alert alert-danger mb-4">
@@ -96,8 +96,71 @@ converter is fast, free, and supports high-quality conversions.{% endblock %}
 </div>
 
 <div class="mt-4">
-  <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+  <a href="/" class="btn btn-outline-secondary" aria-label="Back to Home Page">← Back to Home</a>
 </div>
+
+<!-- Related Tools Section -->
+<hr class="my-5">
+<section class="mb-5 py-4">
+  <h3 class="fw-bold mb-4 text-center">More Media Utilities</h3>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <a href="/compress" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Tools">🔧</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Image Compression</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/remove-background" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Image">🖼️</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Remove Background</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/qr" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Mobile">📱</span>
+          <h6 class="card-title mb-0 text-dark font-heading">QR Generator</h6>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Convert Image Formats Online",
+  "description": "Quickly convert your images between PNG, JPEG, WEBP, and GIF formats for free.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Upload Image",
+      "text": "Select the image you want to convert from your computer or phone.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Choose Target Format",
+      "text": "Select your desired output format (e.g., JPEG, PNG, WEBP) from the dropdown menu.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Convert and Download",
+      "text": "Click the Convert & Download button to receive your professionally formatted image instantly.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT15S"
+}
+</script>
 
 <script>
   // Show/hide quality input based on selected format

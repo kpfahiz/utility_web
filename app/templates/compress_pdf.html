@@ -3,7 +3,7 @@
 {% block meta_description %}Compress PDF files online for free. Reduce the file size of your PDF documents while
 maintaining the best possible quality for sharing and storage.{% endblock %}
 {% block content %}
-<h2 class="mb-4">📄 Compress Your PDF</h2>
+<h1 class="mb-4 h2">📄 Compress Your PDF</h1>
 
 {% if error %}
 <div class="alert alert-danger mb-4">
@@ -37,8 +37,9 @@ maintaining the best possible quality for sharing and storage.{% endblock %}
     </div>
   </div>
   <hr>
-  <a href="/download/{{ download_name }}" class="btn btn-primary" download>Download Compressed PDF</a>
-  <a href="/compress-pdf" class="btn btn-secondary">Compress Another PDF</a>
+  <a href="/download/{{ download_name }}" class="btn btn-primary" download aria-label="Download Compressed PDF">Download
+    Compressed PDF</a>
+  <a href="/compress-pdf" class="btn btn-secondary" aria-label="Compress Another PDF">Compress Another PDF</a>
 </div>
 {% endif %}
 
@@ -55,10 +56,73 @@ maintaining the best possible quality for sharing and storage.{% endblock %}
       <option value="high">High (Smaller Size, Lower Quality)</option>
     </select>
   </div>
-  <button type="submit" class="btn btn-primary">Compress PDF</button>
+  <button type="submit" class="btn btn-primary" aria-label="Compress PDF">Compress PDF</button>
 </form>
 
 <div class="mt-4">
-  <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+  <a href="/" class="btn btn-outline-secondary" aria-label="Back to Homepage">← Back to Home</a>
 </div>
+
+<hr class="my-5">
+<section class="mb-5 py-4">
+  <h3 class="fw-bold mb-4 text-center">More PDF Utilities</h3>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <a href="/edit-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Tools">✏️</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Edit PDF</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/sign-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Pen">✍️</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Sign PDF</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/convert-pdf-doc" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Word">📝</span>
+          <h6 class="card-title mb-0 text-dark font-heading">PDF to Word</h6>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Compress PDF Files Online",
+  "description": "Reduce PDF file size while maintaining document quality with our free online compressor.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Select PDF",
+      "text": "Choose the PDF document you want to compress from your device storage.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Choose Compression Level",
+      "text": "Select between Low, Medium, or High compression based on your quality needs.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Download Optimized PDF",
+      "text": "Click Compress PDF and download your lightweight document instantly.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT30S"
+}
+</script>
 {% endblock %}
+```

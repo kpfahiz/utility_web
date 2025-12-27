@@ -3,13 +3,13 @@
 {% block meta_description %}High-fidelity conversion between PDF and Word documents. Convert PDF to editable DOCX or
 transform Word files into professional PDFs instantly.{% endblock %}
 {% block content %}
-<h2 class="mb-4">
+<h1 class="mb-4 h2">
   {% if conversion_type == "pdf-to-doc" %}
   📄➡️📝 Convert PDF to DOC
   {% else %}
   📝➡️📄 Convert DOC to PDF
   {% endif %}
-</h2>
+</h1>
 
 {% if error %}
 <div class="alert alert-danger mb-4">
@@ -134,6 +134,69 @@ transform Word files into professional PDFs instantly.{% endblock %}
 </div>
 
 <div class="mt-4">
-  <a href="/" class="btn btn-outline-secondary">← Back to Home</a>
+  <a href="/" class="btn btn-outline-secondary" aria-label="Back to Homepage">← Back to Home</a>
 </div>
+
+<hr class="my-5">
+<section class="mb-5 py-4">
+  <h3 class="fw-bold mb-4 text-center">More PDF Utilities</h3>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <a href="/edit-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Tools">✏️</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Edit PDF</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/sign-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Pen">✍️</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Sign PDF</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/compress-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+        <div class="card-body text-center p-3">
+          <span class="fs-2 mb-2 d-block" role="img" aria-label="Shrink">📦</span>
+          <h6 class="card-title mb-0 text-dark font-heading">Compress PDF</h6>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Convert PDF and DOC Files Online",
+  "description": "Easily convert PDF to DOCX or DOCX to PDF with high fidelity and layout preservation.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Choose Conversion Type",
+      "text": "Select whether you want to convert PDF to Word or Word to PDF.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Upload File",
+      "text": "Select your document from your computer or mobile device.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Convert and Download",
+      "text": "Click the Conversion button and download your new formatted document instantly.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT45S"
+}
+</script>
 {% endblock %}

@@ -6,11 +6,12 @@
 tool helps you reduce file sizes and optimize images for the web.{% endblock %}
 
 {% block content %}
+<h1 class="mb-4 h2">📄 Compress Your PDF</h1>
 <div class="row justify-content-center">
   <div class="col-md-8">
     <div class="card shadow-sm mb-5">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Image Compression Tool</h4>
+      <div class="card-header bg-primary text-white text-center">
+        <h1 class="h4 mb-0">Image Compression Tool</h1>
       </div>
       <div class="card-body">
         {% if compressed %}
@@ -102,6 +103,69 @@ tool helps you reduce file sizes and optimize images for the web.{% endblock %}
         </ul>
       </div>
     </section>
+
+    <!-- Related Tools Section -->
+    <hr class="my-5">
+    <section class="mb-5 py-4">
+      <h3 class="fw-bold mb-4 text-center">Discover More Useful Tools</h3>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <a href="/convert-image" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Switch">🔄</span>
+              <h6 class="card-title mb-0 text-dark font-heading">Image Conversion</h6>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/remove-background" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Image">🖼️</span>
+              <h6 class="card-title mb-0 text-dark font-heading">Remove Background</h6>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/qr" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Mobile">📱</span>
+              <h6 class="card-title mb-0 text-dark font-heading">QR Generator</h6>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Compress Images Online for Free",
+  "description": "Learn how to reduce image file size without losing quality using our free online tool.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Upload Your Image",
+      "text": "Select your JPEG or PNG file from your computer or mobile device.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Select Compression Quality",
+      "text": "Use the slider to choose your desired balance between file size and image clarity. We recommend 30%.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Compress and Download",
+      "text": "Click the Optimize & Compress button and download your lightweight image instantly.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT20S"
+}
+</script>
 {% endblock %}

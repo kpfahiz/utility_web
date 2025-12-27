@@ -10,7 +10,7 @@ professional results with transparency or solid color replacement.{% endblock %}
     <div class="col-md-8">
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Remove Background</h4>
+                <h1 class="mb-4 h2">🖼️ Remove Background from Image</h1>
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
@@ -155,8 +155,71 @@ professional results with transparency or solid color replacement.{% endblock %}
                 </div>
             </div>
         </section>
+
+        <!-- Related Tools Section -->
+        <hr class="my-5">
+        <section class="mb-5">
+            <h3 class="fw-bold mb-4">Discover More Useful Tools</h3>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a href="/compress" class="card h-100 text-decoration-none hover-shadow">
+                        <div class="card-body text-center p-3">
+                            <span class="fs-2 mb-2 d-block">🔧</span>
+                            <h6 class="card-title mb-0 text-dark">Image Compression</h6>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/qr" class="card h-100 text-decoration-none hover-shadow">
+                        <div class="card-body text-center p-3">
+                            <span class="fs-2 mb-2 d-block">📱</span>
+                            <h6 class="card-title mb-0 text-dark">QR Generator</h6>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="/edit-pdf" class="card h-100 text-decoration-none hover-shadow">
+                        <div class="card-body text-center p-3">
+                            <span class="fs-2 mb-2 d-block">✏️</span>
+                            <h6 class="card-title mb-0 text-dark">PDF Editor</h6>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
     </div>
 </div>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Remove Background from Image Online",
+  "description": "Learn how to easily remove backgrounds from your images using our AI-powered tool.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Upload Image",
+      "text": "Select your image from your device. We support JPG, PNG, and WEBP formats.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Choose Background Option",
+      "text": "Choose between a transparent background or pick a solid color for replacement using the color picker.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Download Result",
+      "text": "Click the Remove Background button and then download your processed, high-quality image instantly.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT30S"
+}
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

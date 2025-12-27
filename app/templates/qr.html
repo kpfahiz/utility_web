@@ -6,6 +6,7 @@
 colors. Instant download and easy to use.{% endblock %}
 
 {% block content %}
+<h1 class="mb-4 h2">📱 QR Code Generator</h1>
 <div class="row justify-content-center">
   <div class="col-md-8">
     <div class="qr-wrapper bg-white p-4 rounded shadow-sm mb-5">
@@ -96,6 +97,69 @@ colors. Instant download and easy to use.{% endblock %}
         </ol>
       </div>
     </section>
+
+    <!-- Related Tools Section -->
+    <hr class="my-5">
+    <section class="mb-5 py-4">
+      <h3 class="fw-bold mb-4">Discover More Useful Tools</h3>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <a href="/remove-background" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Image">🖼️</span>
+              <h6 class="card-title mb-0 text-dark font-heading">Remove Background</h6>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/compress" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Tools">🔧</span>
+              <h6 class="card-title mb-0 text-dark font-heading">Image Compression</h6>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/sign-pdf" class="card h-100 text-decoration-none hover-shadow border-0 shadow-sm">
+            <div class="card-body text-center p-3">
+              <span class="fs-2 mb-2 d-block" role="img" aria-label="Pen">✍️</span>
+              <h6 class="card-title mb-0 text-dark font-heading">Sign PDF</h6>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
+
+<!-- HowTo Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Generate a QR Code Online",
+  "description": "Create high-quality, custom QR codes for your links or text instantly for free.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Enter Content",
+      "text": "Type or paste the URL, text, or contact information you want to encode into the input field.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Customized Colors",
+      "text": "Optional: Choose your preferred foreground and background colors to match your branding.",
+      "url": "{{ request.url }}"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Generate and Download",
+      "text": "Click the Generate QR Code button and then download your high-resolution PNG file.",
+      "url": "{{ request.url }}"
+    }
+  ],
+  "totalTime": "PT15S"
+}
+</script>
 {% endblock %}
